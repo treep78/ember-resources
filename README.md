@@ -499,6 +499,7 @@ Now we can swap all of the normal HTML-escaped values (`{{ someValue }}`) for `{
   <p> Type: {{input}} / {{input}} </p>
 {{/unless}}
 ```
+Let's also change the 'EDIT' button to say 'CONFIRM EDIT' in the isEditable case.
 
 ##### The values of those input boxes should at least be set initially to the current values of those properties, and possibly should be bound permanently to said values.
 The `{{input}}` helper allows for binding the value of an input box to another variable, so for simplicity's sake, let's just opt for that solution and bind all of the input boxes to their respective properties in the Component.
@@ -521,7 +522,7 @@ The `{{input}}` helper allows for binding the value of an input box to another v
   <button {{action 'toggleExpanded'}}>
     {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
   </button>
-  <button {{action 'toggleEditable'}}>EDIT</button>
+  <button {{action 'toggleEditable'}}>CONFIRM EDIT</button>
   <button {{action 'destroyPokemon'}}>DELETE</button>
   <p> Generation: {{input valueBinding='pokemon.generation'}} </p>
   <p> Type: {{input valueBinding='pokemon.typeOne'}} / {{input valueBinding='pokemon.typeTwo'}} </p>
