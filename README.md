@@ -115,8 +115,8 @@ Clicking these new buttons triggers their respective actions in the Component. S
 
 What if we want to trigger a Route action from within a Component? Because Components are essentially modular, this can only be accomplished by passing that action into the Component when the Component is created. Let's modify the 'pokemon' Template as follows:
 ```html
-{{#each model as |pokemon|}}
-  {{pokemon-snippet pokemon=pokemon routeUpdatePokemon='updatePokemon'}}
+{{#each model as |eachPokemon|}}
+  {{pokemon-snippet pokemon=eachPokemon routeUpdatePokemon='updatePokemon'}}
 {{/each}}
 ```
 This will make the `updatePokemon` and `destroyPokemon` Route actions available to the 'pokemon-snippet' Component, under the aliases of `routeUpdatePokemon` and `routeDestroyPokemon`, respectively. To actually trigger one of these actions from within the Component, we can call the method `sendAction`, passing in the name of the desired action as the first argument.
