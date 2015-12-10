@@ -104,7 +104,7 @@ actions: {
   }
 }
 ```
-and some new buttons to the Template for 'pokemon-snippet':
+and a new button to the Template for 'pokemon-snippet':
 ```html
 <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
 <button {{action 'updatePokemon'}}>EDIT</button>
