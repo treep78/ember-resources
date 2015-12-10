@@ -131,7 +131,7 @@ actions: {
 Now our Component is capable of triggering Route actions!
 
 ### YOUR TURN : Handling Actions
-Now that you've seen how this works with 'updatePokemon', add actions called `destroyPokemon` to the Route and Component, and add a 'DELETE 'button to the Component Template.
+Now that you've seen how this works with `updatePokemon`, add actions called `destroyPokemon` to the Route and Component. Then, add a 'DELETE 'button to the Component Template that triggers both actions.
 
 ## Non-CRUD Actions
 There's no rule that actions need to be related to CRUD. Suppose we wanted to add a button to 'pokemon-snippet' that would toggle between hiding and showing the details (e.g. 'generation') of a given Pokemon. In our Component, let's create a new property, `isExpanded`, and a new action, `toggleExpanded`.
@@ -160,7 +160,7 @@ export default Ember.Component.extend({
 Triggering the `toggleExpanded` action will allow us to toggle the value of the `isExpanded` property. Let's make some modifications to the Template for our Component.
 ```html
 <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-<button {{action 'toggleExpanded'}}>{{#if isExpanded}}EXPAND{{else}}COLLAPSE{{/if}}</button>
+<button {{action 'toggleExpanded'}}>{{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}</button>
 {{#if isExpanded}}
   <button {{action 'updatePokemon'}}>EDIT</button>
   <button {{action 'destroyPokemon'}}>DELETE</button>
@@ -218,9 +218,10 @@ export default Ember.Route.extend({
   actions: {
     // ...
     destroyPokemon: function(pokemon){
-      console.log('Route Action : destroyPokemon ' + pokemon.get('id'));
+      console.log('Route Action : destroyPokemon => destroying record with id ' + pokemon.get('id'));
       this.store.findRecord('pokemon', pokemon.get('id')).then(function(pokemon){
         pokemon.destroyRecord();
+        console.log('record destroyed');
       });
     }
   }
@@ -229,16 +230,305 @@ export default Ember.Route.extend({
 
 As you can see, when we click the 'DELETE' button, the record for that Pokemon gets destroyed.
 
-<!-- ## CRUD : Adding a New Record
-Adding a new Pokemon is a behavior tied to the _list_ of Pokemon instead of any particular Pokemon, so it would make the most sense to handle that behavior outside of the 'pokemon-snippet' Component.
+## CRUD : Adding a New Record
+Adding a new Pokemon is a behavior tied to the _list_ of Pokemon instead of any particular Pokemon, so it would make the most sense to handle that behavior outside of the 'pokemon-snippet' Component. Suppose that we wanted this to be routable as well, e.g. `/pokemon/new`, so that the URL can be bookmarked. In that case, we would need to create a new Template using `ember g template pokemon/new`.
 
-Suppose that we wanted to make a `/pokemon/new` view state so that we could bookmark it
+Let's populate that new Template with the following:
+```html
+<h5> Add a Pokemon to the directory! </h5>
+{{input placeholder='National Pokemon Number'}}
+{{input placeholder='Name'}}
+{{input placeholder='Type One'}}
+{{input placeholder='Type Two'}}
+{{input placeholder='Generation'}}
+<button {{action 'createPokemon'}}> Add a New Pokemon </button>
+
+{{#link-to 'pokemon'}}Back{{/link-to}}
+```
+
+Additionally, let's create an 'index' Template on Pokemon, with a link pointing to this new 'pokemon/new' Template. We can do this by running `ember g template pokemon/index`, and filling the template with the following:
+
+```html
+{{#link-to 'pokemon.new'}}Add a new Pokemon{{/link-to}}
+```
+
+Last, but certainly not least, we need to (a) add an `{{outlet}}` to the 'pokemon' Template
+```html
+
+```
+and (b) update the Ember Router to point to this new Template:
+```javascript
+Router.map(function() {
+  this.route('pokemon', function(){
+    this.route('new');
+  });
+});
+```
+As you can see, clicking the button labeled 'Add a New Pokemon' triggers the `createPokemon` action. How do we then translate that into performing CRUD on the model?
+
+The method to add a new record to the data store is `<store>.createRecord(<type of record>, <new record data>).save()`, so let's leverage that inside our `createPokemon` Route action.
+> .save() is necessary in order for the data store to give your new Pokemon an `id`
+
+```javascript
+export default Ember.Route.extend({
+  model: function(){
+    return this.store.findAll('pokemon');
+  },
+  actions: {
+    createPokemon: function(){
+      console.log('Route Action : createPokemon');
+      this.store.createRecord('pokemon', {
+        nationalPokeNum: 201,
+        name: 'Unown',
+        typeOne: 'PSYCHIC',
+        typeTwo: '',
+        generation: 2
+      }).save();
+    },
+    // ...
+  }
+});
+```
+> Get it? '[Unown](http://pokemondb.net/pokedex/unown)'?
+
+As you can see, this will create a new Pokemon with the specified information every time we click the button. How do we instead tell it to use the information specified in the `<input>` fields?
+
+This is a great use case for a Component - we could take data in our Template and bind it to the Component's own properties. However, we also specified that we want this to be routable, and Components are not yet routable. We could move the whole contents of `pokemon/new` into a Template, but an equally valid approach might be to store that data (while we still can) in a View.
+
+Let's generate a new View for `pokemon/new` (`ember g view pokemon/new`) and fill it as follows:
+```javascript
+import Ember from 'ember';
+
+export default Ember.View.extend({
+  newPokemon: {
+    nationalPokeNum: null,
+    name: null,
+    typeOne: null,
+    typeTwo: null,
+    generation: null
+  }
+});
+```
+This will give us a place to store our data. Now we have a problem, though - how do we sync the values of the `<input>` fields to our new View property? The answer is: **binding**. We can set `valueBinding` properties on each `<input>` element, persistently syncing them to properties on `view.newPokemon`.
+
+```html
+<h5> Add a Pokemon to the directory! </h5>
+{{input placeholder='National Pokemon Number' valueBinding='view.newPokemon.nationalPokeNum' }}
+{{input placeholder='Name' valueBinding='view.newPokemon.name' }}
+{{input placeholder='Type One' valueBinding='view.newPokemon.typeOne' }}
+{{input placeholder='Type Two' valueBinding='view.newPokemon.typeTwo' }}
+{{input placeholder='Generation' valueBinding='view.newPokemon.generation' }}
+<button {{action 'createPokemon' view.newPokemon}}> Add a New Pokemon </button>
+
+{{#link-to 'pokemon'}}Back{{/link-to}}
+```
+We can verify that our binding is working correctly by temporarily adding `{{view.newPokemon.name}}` to our `pokemon/new` Template - if it syncs up with the name that's in the form, you're good to go.
+
+The next step is to pass the View's `newPokemon` property into the `{{action}}` helper so that it can get shared with the Route's `createPokemon` action.
+```html
+<button {{action 'createPokemon' view.newPokemon}}> Add a New Pokemon </button>
+```
+Finally, we need to update our Route's `createPokemon` action so that it can accept `view.newPokemon` as an argument.
+
+```javascript
+export default Ember.Route.extend({
+  model: function(){
+    return this.store.findAll('pokemon');
+  },
+  actions: {
+    createPokemon: function(newPokemon){
+      console.log('Route Action : createPokemon');
+      // this.store.createRecord('pokemon', {
+      //   nationalPokeNum: 0,
+      //   name: 'Unown',
+      //   typeOne: 'PSYCHIC',
+      //   typeTwo: '',
+      //   generation: 2
+      // }).save();
+      console.log(newPokemon);
+      this.store.createRecord('pokemon', newPokemon).save();
+    },
+    // ...
+  }
+});
+```
+Now we can create new Pokemon records by filling out our form!
 
 ## CRUD : Updating an Existing Record
+Now that we've handled Create and Destroy, the last CRUD action to take care of is Update. There are several different ways to accomplish an update, depending on your UI, so let's start by making the following decision about how we want things to behave. **Keep in mind that these are just design decisions - your needs may differ, depending on your application.**
+* Updating, like destroying, is specific to one particular record, so it might make sense to handle that behavior from within the 'pokemon-snippet' Component.
+* Within the 'pokemon-snippet' Component, we should be able to toggle between 'editable' and 'not editable' states.
+* This state change should be controlled by the 'EDIT' button that we already have.
+* When the 'pokemon-snippet' Component is in its 'not editable' state, it should look the same as it currently does.
+* When the 'pokemon-snippet' Component is in its 'editable' state, every data value should be replaced by an input box.
+* The values of those input boxes should at least be set initially to the current values of those properties, and possibly should be bound permanently to said values.
 
+Given these assumptions/decisions, let's see if we can work our way towards working Update behavior.
+
+##### Updating, like destroying, is specific to one particular record, so it might make sense to handle that behavior from within the 'pokemon-snippet' Component.
+##### Within the 'pokemon-snippet' Component, we should be able to toggle between 'editable' and 'not editable' states.
+These indicate that we should have some sort of state property, attached to the 'pokemon-snippet' Component, which can be toggled by a button (implying that there must be a Component action to trigger the toggle). In that vein, let's add a new property and action to the 'pokemon-snippet' Component : `isEditable` and `toggleEditable`, respectively.
+```javascript
+export default Ember.Component.extend({
+  tagName: 'li',
+  twoTypes: Ember.computed('pokemon.typeOne', 'pokemon.typeTwo', function(){
+    return this.get('pokemon.typeTwo') && this.get('pokemon.typeTwo') !== this.get('pokemon.typeOne');
+  }),
+  isExpanded: false,
+  isEditable: false,
+  actions: {
+    toggleExpanded: function(){
+      this.toggleProperty('isExpanded');
+    },
+    toggleEditable: function(){
+      this.toggleProperty('isEditable');
+    },
+    updatePokemon: function(){
+      console.log('Component Action : updatePokemon');
+      this.sendAction('routeUpdatePokemon');
+    },
+    destroyPokemon: function(){
+      console.log('Component Action : destroyPokemon');
+      this.sendAction('routeDestroyPokemon', this.get('pokemon'));
+    }
+  }
+});
+```
+
+##### This state change should be controlled by the 'EDIT' button that we already have.
+Straightforward enough. Let's change the EDIT button so that it triggers the new `toggleEditable` action.
+```html
+<strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
+<button {{action 'toggleExpanded'}}>
+  {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
+</button>
+{{#if isExpanded}}
+  <button {{action 'toggleEditable'}}>EDIT</button>
+  <button {{action 'destroyPokemon'}}>DELETE</button>
+  <p> Generation: {{pokemon.generation}} </p>
+  <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
+{{/if}}
+```
+
+> Although this wasn't mentioned as a requirement, it might be a little weird if we were to set `isEditable` to true, and then for it to remain true after we've collapsed and then reopened the Component. Let's change our `toggleExpanded` action so that it sets `isEditable` to false every time the Component is collapsed.
+```javascript
+export default Ember.Component.extend({
+  // ...
+  isExpanded: false,
+  isEditable: false,
+  actions: {
+    toggleExpanded: function(){
+      this.toggleProperty('isExpanded');
+      if (!this.get('isExpanded')) {
+        this.set('isEditable', false);
+      }
+    },
+    // ...
+  }
+});
+```
+
+##### When the 'pokemon-snippet' Component is in its 'not editable' state, it should look the same as it currently does.
+##### When the 'pokemon-snippet' Component is in its 'editable' state, every data value should be replaced by an input box.
+
+There are probably a couple of ways you could do this, but what would probably by easiest is simple to have two separate sections of the Component's Template, switched by an `{{#if}}` or `{{#unless}}` helper. Since the normal state should show up when the Component is _not_ editable, it would probably make sense to use `{{#unless}}`.
+
+```html
+{{#unless isEditable}} {{!-- Non-editable Version --}}
+  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
+  <button {{action 'toggleExpanded'}}>
+    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
+  </button>
+  {{#if isExpanded}}
+    <button {{action 'toggleEditable'}}>EDIT</button>
+    <button {{action 'destroyPokemon'}}>DELETE</button>
+    <p> Generation: {{pokemon.generation}} </p>
+    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
+  {{/if}}
+{{/unless}}
+```
+To handle the opposite case, we can add an `{{else}}` helper.
+```html
+{{#unless isEditable}} {{!-- Non-editable Version --}}
+  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
+  <button {{action 'toggleExpanded'}}>
+    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
+  </button>
+  {{#if isExpanded}}
+    <button {{action 'toggleEditable'}}>EDIT</button>
+    <button {{action 'destroyPokemon'}}>DELETE</button>
+    <p> Generation: {{pokemon.generation}} </p>
+    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
+  {{/if}}
+{{else}}  {{!-- Editable Version --}}
+  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
+  <button {{action 'toggleExpanded'}}>
+    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
+  </button>
+  {{#if isExpanded}}
+    <button {{action 'toggleEditable'}}>EDIT</button>
+    <button {{action 'destroyPokemon'}}>DELETE</button>
+    <p> Generation: {{pokemon.generation}} </p>
+    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
+  {{/if}}
+{{/unless}}
+```
+Now we can swap all of the normal HTML-escaped values (`{{ someValue }}`) for `{{input}}` helpers, so that they can generate new `<input>` elements.
+```html
+{{#unless isEditable}} {{!-- Non-editable Version --}}
+  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
+  <button {{action 'toggleExpanded'}}>
+    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
+  </button>
+  {{#if isExpanded}}
+    <button {{action 'toggleEditable'}}>EDIT</button>
+    <button {{action 'destroyPokemon'}}>DELETE</button>
+    <p> Generation: {{pokemon.generation}} </p>
+    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
+  {{/if}}
+{{else}}  {{!-- Editable Version --}}
+  <strong>
+    #{{input}} : {{input}}
+  </strong>
+  <button {{action 'toggleExpanded'}}>
+    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
+  </button>
+  <button {{action 'toggleEditable'}}>EDIT</button>
+  <button {{action 'destroyPokemon'}}>DELETE</button>
+  <p> Generation: {{input}} </p>
+  <p> Type: {{input}} / {{input}} </p>
+{{/unless}}
+```
+
+##### The values of those input boxes should at least be set initially to the current values of those properties, and possibly should be bound permanently to said values.
+The `{{input}}` helper allows for binding the value of an input box to another variable, so for simplicity's sake, let's just opt for that solution and bind all of the input boxes to their respective properties in the Component.
+```html
+{{#unless isEditable}} {{!-- Non-editable Version --}}
+  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
+  <button {{action 'toggleExpanded'}}>
+    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
+  </button>
+  {{#if isExpanded}}
+    <button {{action 'toggleEditable'}}>EDIT</button>
+    <button {{action 'destroyPokemon'}}>DELETE</button>
+    <p> Generation: {{pokemon.generation}} </p>
+    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
+  {{/if}}
+{{else}}  {{!-- Editable Version --}}
+  <strong>
+    #{{input valueBinding='pokemon.nationalPokeNum'}} : {{input valueBinding='pokemon.name'}}
+  </strong>
+  <button {{action 'toggleExpanded'}}>
+    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
+  </button>
+  <button {{action 'toggleEditable'}}>EDIT</button>
+  <button {{action 'destroyPokemon'}}>DELETE</button>
+  <p> Generation: {{input valueBinding='pokemon.generation'}} </p>
+  <p> Type: {{input valueBinding='pokemon.typeOne'}} / {{input valueBinding='pokemon.typeTwo'}} </p>
+{{/unless}}
+```
+That's it! Now we can create, update, and destroy Pokemon records.
 
 ## Additional Resources
-List additional related resources such as videos, blog posts and official documentation.
-- Item 1
-- Item 2
-- Item 3 -->
+- [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)
+- [Ember API : DS.store](http://emberjs.com/api/data/classes/DS.Store.html)
