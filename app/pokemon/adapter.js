@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import ApplicationAdapter from '../application/adapter';
 
 var inflector = Ember.Inflector.inflector;
