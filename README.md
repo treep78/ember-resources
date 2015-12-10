@@ -18,10 +18,10 @@ At this point, students have already learned how to:
 ### Objectives
 By the end of this lesson, students should be able to:
 
-- Trigger Route `action`s from Templates and Component Templates.
-- Create Component `action`s and trigger them from Component Templates.
-- Trigger Route `action`s from Component `action`s.
-- Add `action`s to an Ember Route for each of the standard CRUD actions (index, create, show, update, destroy) to effect changes onto the Route's model.
+- Create Route actions and trigger them from Templates.
+- Create Component actions and trigger them from Component Templates.
+- Trigger Route actions from Component actions.
+- Add behavior to Route actions to perform CRUD on the Route's model.
 - Explain the meaning of the expression "actions up, data down".
 
 ### Setup
