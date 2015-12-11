@@ -28,7 +28,7 @@ By the end of this lesson, students should be able to:
 1. Fork and clone this repo.
 2. Run `npm install && bower install`
 3. Run `ember install ember-legacy-views`
-4. Run `ember install ember-cli-mirage`
+4. Run `ember install ember-cli-mirage`, but _do not_ overwrite the `config.js` file. Additionally, delete the `scenarios` directory.
 
 ## The Shifting Landscape of Ember CRUD
 Wow! We've really come a long way with Ember so far. We've learned all about the different parts of an Ember application: Templates, `Ember.View`, `Ember.Route`, `Ember.Router`, `Ember.Component`, `ember-data`, `DS.Model`... Now it's finally time to tie all of this together through one of the core functionalities of most applications, CRUD.
