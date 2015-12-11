@@ -1,10 +1,11 @@
 export default function() {
 
-  this.get('/api/pokemon');
-  this.get('/api/pokemon/:id');
-  this.post('/api/pokemon');
-  this.put('/api/pokemon/:id');
-  this.del('/api/pokemon/:id');
+  this.namespace = 'api';
+  this.get('/pokemon');
+  this.get('/pokemon/:id');
+  this.post('/pokemon');
+  this.put('/pokemon/:id');
+  this.del('/pokemon/:id');
 
 
   // These comments are here to help you get started. Feel free to delete them.
