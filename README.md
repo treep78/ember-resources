@@ -250,6 +250,11 @@ export default Ember.Route.extend({
 
 As you can see, when we click the 'DELETE' button, the record for that Pokemon gets destroyed.
 
+### YOUR TURN : Destroying a Record
+Let's revisit our 'item' resource. As you can see the table shows a list of five items that were loaded into the Mirage test fixture. In each row, we have a button with an 'X' inside it. In the previous exercise, we set it up so that clicking that button would trigger an action in the Component (which would, in turn, trigger an action in the Route).
+
+On your own, edit the `destroyItem` actions inside the 'item-row' Component and 'items' Route so that clicking the 'X' button in a given row destroys that row.
+
 ## CRUD : Adding a New Record
 Adding a new Pokemon is a behavior tied to the _list_ of Pokemon instead of any particular Pokemon, so it would make the most sense to handle that behavior outside of the 'pokemon-snippet' Component. Suppose that we wanted this to be routable as well, e.g. `/pokemon/new`, so that the URL can be bookmarked. In that case, we would need to create a new Template using `ember g template pokemon/new`.
 
