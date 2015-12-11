@@ -135,7 +135,23 @@ actions: {
 Now our Component is capable of triggering Route actions!
 
 ### YOUR TURN : Handling Actions
+In the Pokemon games, your character can pick up and use items to affect your Pokemons' performance; a full list of in-game items can be found [here](http://pokemondb.net/item/all). In addition to tracking Pokemon collected, suppose that we also wanted our Pokedex to keep track of all of the items we've picked up so far. A Model, Adapter, and Test Fixture for this new 'item' resource are provided for you in this repo; an 'item' has the following data structure:
+* name : Name of the Item
+* category : What type of Item it is (e.g. 'Hold item', 'Battle item', 'General item')
+* effect : What the Item does
 
+In addition, a Template has been created for you at the route 'items' (`/items`). Add a link to it from your 'index' Template by dropping in this `{{#link-to}}`:
+```html
+<p>{{#link-to 'items'}} Items You've Collected {{/link-to}}</p>
+```
+The Route for this Template loads all instances of the 'item' resource within its `model` method. And as you can see, this Template uses a component called 'item-row'; this has also been provided for you.
+
+On your own,
+1. Use the `{{#each}}` helper to pass each 'item' into each 'item-row' Component; it should be available within the Component under the name `each`.
+2. Add `createItem` and `destroyItem` actions to the 'items' Route; each method should print output of the form "Route Action : createItem".
+3. Pass the `destroyItem` action into the 'item-row' Component, under the name `routeDestroyItem`.
+4. Create a new `destroyItem` action within the 'item-row' Component which triggers the Route's `destoryItem` action.
+5. Link this new `destroyItem` action to the button in the 'item-row' Template.
 
 ## Non-CRUD Actions
 There's no rule that actions need to be related to CRUD. Suppose we wanted to add a button to 'pokemon-snippet' that would toggle between hiding and showing the details (e.g. 'generation') of a given Pokemon. In our Component, let's create a new property, `isExpanded`, and a new action, `toggleExpanded`.
