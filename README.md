@@ -28,7 +28,7 @@ By the end of this lesson, students should be able to:
 1. Fork and clone this repo.
 2. Run `npm install && bower install`
 3. Run `ember install ember-legacy-views`
-4. Run `ember install ember-cli-mirage`, but _do not_ overwrite the `config.js` file. Additionally, delete the `scenarios` directory. 
+4. Run `ember install ember-cli-mirage`, but _do not_ overwrite the `config.js` file. Additionally, delete the `scenarios` directory.
 
 ## The Shifting Landscape of Ember CRUD
 Wow! We've really come a long way with Ember so far. We've learned all about the different parts of an Ember application: Templates, `Ember.View`, `Ember.Route`, `Ember.Router`, `Ember.Component`, `ember-data`, `DS.Model`... Now it's finally time to tie all of this together through one of the core functionalities of most applications, CRUD.
@@ -277,13 +277,16 @@ export default Ember.Route.extend({
   actions: {
     createPokemon: function(){
       console.log('Route Action : createPokemon');
-      this.store.createRecord('pokemon', {
+      var newPokemon = this.store.createRecord('pokemon', {
         nationalPokeNum: 201,
         name: 'Unown',
         typeOne: 'PSYCHIC',
         typeTwo: '',
         generation: 2
-      }).save();
+      });
+      newPokemon.save().then(function(){
+        console.log('record created');
+      });
     },
     // ...
   }
@@ -336,17 +339,19 @@ export default Ember.Route.extend({
     return this.store.findAll('pokemon');
   },
   actions: {
-    createPokemon: function(newPokemon){
+    createPokemon: function(newPokemonData){
       console.log('Route Action : createPokemon');
-      // this.store.createRecord('pokemon', {
-      //   nationalPokeNum: 0,
+      // var newPokemon = this.store.createRecord('pokemon', {
+      //   nationalPokeNum: 201,
       //   name: 'Unown',
       //   typeOne: 'PSYCHIC',
       //   typeTwo: '',
       //   generation: 2
-      // }).save();
-      console.log(newPokemon);
-      this.store.createRecord('pokemon', newPokemon).save();
+      // });
+      var newPokemon = this.store.createRecord('pokemon', newPokemonData);
+      newPokemon.save().then(function(){
+        console.log('record created');
+      });
     },
     // ...
   }
