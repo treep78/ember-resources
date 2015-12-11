@@ -101,6 +101,9 @@ As was mentioned, Routes are not the only things that can have actions; Componen
 actions: {
   updatePokemon: function(){
     console.log('Component Action : updatePokemon');
+  },
+  destroyPokemon: function(){
+    console.log('Component Action : updatePokemon');
   }
 }
 ```
@@ -108,6 +111,7 @@ and a new button to the Template for 'pokemon-snippet':
 ```html
 <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
 <button {{action 'updatePokemon'}}>EDIT</button>
+<button {{action 'destroyPokemon'}}>EDIT</button>
 <p> Generation: {{pokemon.generation}} </p>
 <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
 ```
@@ -131,7 +135,7 @@ actions: {
 Now our Component is capable of triggering Route actions!
 
 ### YOUR TURN : Handling Actions
-Now that you've seen how this works with `updatePokemon`, add actions called `destroyPokemon` to the Route and Component. Then, add a 'DELETE 'button to the Component Template that triggers both actions.
+
 
 ## Non-CRUD Actions
 There's no rule that actions need to be related to CRUD. Suppose we wanted to add a button to 'pokemon-snippet' that would toggle between hiding and showing the details (e.g. 'generation') of a given Pokemon. In our Component, let's create a new property, `isExpanded`, and a new action, `toggleExpanded`.
@@ -536,6 +540,7 @@ The `{{input}}` helper allows for binding the value of an input box to another v
 
 ##### Cleanup
 I guess we didn't need those `updatePokemon` actions after all - let's remove them. Let's also get rid of the three buttons we added to the 'pokemon' Template, since those were just for testing. Once we're done with those things we should be good to go, since the app can now Create, Update, and Destroy!
+
 
 ## Additional Resources
 - [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)
