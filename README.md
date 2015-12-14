@@ -118,9 +118,14 @@ Clicking these new buttons triggers their respective actions in the Component. S
 
 What if we want to trigger a Route action from within a Component? Because Components are essentially modular, this can only be accomplished by passing that action into the Component when the Component is created. Let's modify the 'pokemon' Template as follows:
 ```html
+<ul>
 {{#each model as |eachPokemon|}}
-  {{pokemon-snippet pokemon=eachPokemon routeUpdatePokemon='updatePokemon'}}
+  {{pokemon-snippet pokemon=eachPokemon
+      routeUpdatePokemon='updatePokemon'
+      routeDestroyPokemon='destroyPokemon'
+  }}
 {{/each}}
+</ul>
 ```
 This will make the `updatePokemon` and `destroyPokemon` Route actions available to the 'pokemon-snippet' Component, under the aliases of `routeUpdatePokemon` and `routeDestroyPokemon`, respectively. To actually trigger one of these actions from within the Component, we can call the method `sendAction`, passing in the name of the desired action as the first argument.
 ```javascript
@@ -282,7 +287,16 @@ Additionally, let's create an 'index' Template on Pokemon, with a link pointing 
 
 Last, but certainly not least, we need to (a) add an `{{outlet}}` to the 'pokemon' Template
 ```html
+<ul>
+{{#each model as |eachPokemon|}}
+  {{pokemon-snippet pokemon=eachPokemon
+      routeUpdatePokemon='updatePokemon'
+      routeDestroyPokemon='destroyPokemon'
+  }}
+{{/each}}
+</ul>
 
+{{outlet}}
 ```
 and (b) update the Ember Router to point to this new Template:
 ```javascript
