@@ -384,6 +384,22 @@ export default Ember.Route.extend({
 ```
 Now we can create new Pokemon records by filling out our form!
 
+### YOUR TURN : Adding a New Record
+Instead of using a routed Template, like we did with Pokemon, let's put the form for creating an 'item' inside a new Component that you will generate called 'new-item-form'. The process will be mostly the same as above; however, the fact that we're using a Component means that any arguments or actions that we want the Component to trigger must be passed in when the Component is called from a parent Template.
+
+Use the following content as the Template for the 'new-item-form' Component (`new-item-form/template.js`):
+```html
+<h4> Create a New Item </h4>
+
+<p>Name: {{input}}</p>
+<p>Category: {{input}}</p>
+<p>Effect: {{input}}</p>
+
+<button>Create Item</button>
+```
+Add a property called `form` to your Component Ember Class, and use `valueBinding` to associate each input box in the Template with a sub-property of `form`. Also add a Computed Property called `newItem` to your Component that watches `form` for changes and returns an object with all of the properties that a new Item should have; this will be the data that you send up to your Route action.
+> The benefit of having this extra layer is that it will allow you to insert some pre-formatting logic between the form and the Route action. This could be useful if you need to concatenate, split, or change the case of any of the fields before performing CRUD!
+
 ## CRUD : Updating an Existing Record
 Now that we've handled Create and Destroy, the last CRUD action to take care of is Update. There are several different ways to accomplish an update, depending on your UI, so let's start by making the following decision about how we want things to behave. **Keep in mind that these are just design decisions - your needs may differ, depending on your application.**
 * Updating, like destroying, is specific to one particular record, so it might make sense to handle that behavior from within the 'pokemon-snippet' Component.
