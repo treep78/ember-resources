@@ -21,9 +21,8 @@ By the end of this lesson, students should be able to:
 - Create Route actions and trigger them from Templates.
 - Create Component actions and trigger them from Component Templates.
 - Trigger Route actions from Component actions.
-- Add behavior to Route actions to perform CRUD on the Route's model.
 - Explain the meaning of the expression "actions up, data down".
-
+- Add behavior to Route actions to perform CRUD on the Route's model.
 ### Setup
 1. Fork and clone this repo.
 2. Run `npm install && bower install`
@@ -132,7 +131,11 @@ actions: {
   }
 },
 ```
-Now our Component is capable of triggering Route actions!
+
+As you can see, the Component accepts two types of inputs: data (such as `eachPokemon`) and references to actions (such as `'updatePokemon'`). In Ember applications that use Components (which will soon be all of them)
+the recommended strategy is to follow a 'data down, actions up' design pattern, which essentially means two things:
+1. All Components look to their parent element as a source of data to bind to; as a result, data changes propagate 'downwards' from parent to child.
+2. Implicit in the first point is that all changes to date place in the parent. In order to effect changes to the data in a parent element, Components trigger their parents' actions; in this fashion, action invocations propagate 'upwards' from child to parent.
 
 ### YOUR TURN : Handling Actions
 In the Pokemon games, your character can pick up and use items to affect your Pokemons' performance; a full list of in-game items can be found [here](http://pokemondb.net/item/all). In addition to tracking Pokemon collected, suppose that we also wanted our Pokedex to keep track of all of the items we've picked up so far. A Model, Adapter, and Test Fixture for this new 'item' resource are provided for you in this repo; an 'item' has the following data structure:
