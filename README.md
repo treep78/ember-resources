@@ -575,8 +575,7 @@ The `{{input}}` helper allows for binding the value of an input box to another v
 {{/unless}}
 ```
 
-##### Cleanup
-I guess we didn't need those `updatePokemon` actions after all - let's remove them. Let's also get rid of the three buttons we added to the 'pokemon' Template, since those were just for testing. Once we're done with those things we should be good to go, since the app can now Create, Update, and Destroy!
+>Guess we didn't need those `updatePokemon` actions after all - let's remove them. Let's also get rid of the three buttons we added to the 'pokemon' Template, since those were just for testing. Once we're done with those things we should be good to go, since the app can now Create, Update, and Destroy!
 
 
 ## Additional Resources
