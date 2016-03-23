@@ -393,7 +393,7 @@ Then, pass these actions into the 'item-row' Component and define
 Finally, link the new `destroyItem` action to the button in the 'item-row'
  Template.
 
-## CRUD : Destroying a Record
+### Code-Along : Destroy (DDAU)
 
 Now let's add some functionality behind those Route actions - any time the
  `destroyPokemon` Route action is triggered, we destroy a particular Pokemon.
@@ -401,16 +401,8 @@ The way to destroy a given record from the data store is
  `<record>.destroyRecord()`. However, before we can destroy a record, we need to
  find it; we can do this using `<store>.findRecord(<type of record>, <id>)`
  (when invoked from a Route, the store is accessible at `this.store`).
-However, the `findRecord` method returns a _Promise_, so we'll need handle that
+However, the `findRecord` method returns a Promise, so we'll need handle that
  Promise in the usual way.
-
-```js
-store.findRecord(<type of record>, <id>).then(function(<record>) {
-  <record>.destroyRecord();
-});
-```
-
-Inside the Route's `destroyPokemon` action, that code looks like this.
 
 ```js
 export default Ember.Route.extend({
@@ -419,25 +411,23 @@ export default Ember.Route.extend({
   },
   actions: {
     // ...
-    destroyPokemon: function(){
+    destroyPokemon: function() {
       console.log('Route Action : destroyPokemon');
-      this.store.findRecord('pokemon', <id>).then(function(pokemon){
-        pokemon.destroyRecord();
+      this.store.findRecord('pokemon', <id>).then((record) => {
+        record.destroyRecord()
       });
     }
   }
 });
 ```
 
-As you can see, we're missing one critical piece of information : the `id` of
+We're missing one critical piece of information : the `id` of
  the particular Pokemon we want to destroy.
-What we need to do is pass that information from the 'pokemon-snippet' Component
+We need to pass that information from the 'pokemon-snippet' Component
  (which has access to that particular record) back up to the Route.
-How can we do that?
+We can do this by passing additional arguments to `sendAction`.
 
-As it turns out, the `sendAction` method can optionally accept additional
- arguments beyond the name of the action that it's triggering.
-Let's change the Components `destroyPokemon` action so that it passes in the
+Let's change the Component's `destroyPokemon` action so that it passes in the
  `id` of the Pokemon it refers to.
 
 ```js
@@ -447,7 +437,7 @@ export default Ember.Component.extend({
     // ...
     destroyPokemon: function(){
       console.log('Component Action : destroyPokemon');
-      this.sendAction('routeDestroyPokemon', this.get('pokemon'));
+      this.sendAction('routeDestroyPokemon', this.get('pokemon').get('id'));
     }
   }
 });
@@ -462,9 +452,9 @@ export default Ember.Route.extend({
   },
   actions: {
     // ...
-    destroyPokemon: function(pokemon){
+    destroyPokemon: function(id){
       console.log('Route Action : destroyPokemon => destroying record with id ' + pokemon.get('id'));
-      this.store.findRecord('pokemon', pokemon.get('id')).then(function(pokemon){
+      this.store.findRecord('pokemon', id).then(function(pokemon){
         pokemon.destroyRecord();
         console.log('record destroyed');
       });
@@ -473,8 +463,7 @@ export default Ember.Route.extend({
 });
 ```
 
-As you can see, when we click the 'DELETE' button, the record for that Pokemon
- gets destroyed.
+When we click the 'DELETE' button, the record for that Pokemon gets destroyed.
 
 ### YOUR TURN : Destroying a Record
 
