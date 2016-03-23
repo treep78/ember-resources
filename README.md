@@ -393,55 +393,6 @@ Then, pass these actions into the 'item-row' Component and define
 Finally, link the new `destroyItem` action to the button in the 'item-row'
  Template.
 
-## Non-CRUD Actions
-
-There's no rule that actions need to be related to CRUD.
-Suppose we wanted to add a button to 'pokemon-snippet' that would toggle
- between hiding and showing the details (e.g. 'generation') of a given Pokemon.
-In our Component, let's create a new property, `isExpanded`, and a new action,
- `toggleExpanded`.
-
-```js
-export default Ember.Component.extend({
-  tagName: 'li',
-  twoTypes: Ember.computed('pokemon.typeOne', 'pokemon.typeTwo', function(){
-    return this.get('pokemon.typeTwo') && this.get('pokemon.typeTwo') !== this.get('pokemon.typeOne');
-  }),
-  isExpanded: false,
-  actions: {
-    toggleExpanded: function(){
-      this.toggleProperty('isExpanded');
-    },
-    updatePokemon: function(){
-      console.log('Component Action : updatePokemon');
-      this.sendAction('routeUpdatePokemon');
-    },
-    destroyPokemon: function(){
-      console.log('Component Action : destroyPokemon');
-      this.sendAction('routeDestroyPokemon');
-    }
-  }
-});
-```
-
-Triggering the `toggleExpanded` action will allow us to toggle the value of the
- `isExpanded` property.
-Let's make some modifications to the Template for our Component.
-
-```html
-<strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-<button {{action 'toggleExpanded'}}>{{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}</button>
-{{#if isExpanded}}
-  <button {{action 'updatePokemon'}}>EDIT</button>
-  <button {{action 'destroyPokemon'}}>DELETE</button>
-  <p> Generation: {{pokemon.generation}} </p>
-  <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
-{{/if}}
-```
-
-Now every time the 'EXPAND'/'COLLAPSE' button is clicked, the content inside the
- `{{#if}}` will toggle between being visible and being hidden.
-
 ## CRUD : Destroying a Record
 
 Now let's add some functionality behind those Route actions - any time the
