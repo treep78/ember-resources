@@ -411,10 +411,11 @@ export default Ember.Route.extend({
   },
   actions: {
     // ...
-    destroyPokemon: function() {
+    destroyPokemon: function(id){
       console.log('Route Action : destroyPokemon');
-      this.store.findRecord('pokemon', <id>).then((record) => {
-        record.destroyRecord()
+      this.store.findRecord('pokemon', id).then((pokemon) => {
+        this.get('store').unloadRecord(pokemon);
+        console.log(`record ${id} destroyed`);
       });
     }
   }
@@ -454,8 +455,8 @@ export default Ember.Route.extend({
     // ...
     destroyPokemon: function(id){
       console.log('Route Action : destroyPokemon');
-      this.store.findRecord('pokemon', id).then(function(pokemon){
-        pokemon.destroyRecord();
+      this.store.findRecord('pokemon', id).then((pokemon) => {
+        this.get('store').unloadRecord(pokemon);
         console.log(`record ${id} destroyed`);
       });
     }
