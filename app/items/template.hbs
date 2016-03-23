@@ -3,9 +3,10 @@
     <th>Name</th>
     <th>Category</th>
     <th>Effect</th>
+    <th>Save?</th>
     <th>Delete?</th>
   </tr>
   {{#each model as |eachItem|}}
-    {{item-row}}
+    {{item-row item=eachItem}}
   {{/each}}
 </table>

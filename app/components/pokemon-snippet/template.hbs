@@ -1,3 +1,10 @@
-<strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
+<h4>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</h4>
 <p> Generation: {{pokemon.generation}} </p>
-<p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
+<button>EDIT</button>
+<button>DESTROY</button>
+<p>
+  Type(s): {{pokemon.typeOne}}
+  {{#if twoTypes}}
+    / {{pokemon.typeTwo}}
+  {{/if}}
+</p>
