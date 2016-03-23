@@ -382,45 +382,16 @@ As you can see, the Component accepts two types of inputs: data (such as
 To actually perform the CRUD in the Route, you need to manipulate the store,
  which is what we'll be looking at after the next lab.
 
-### YOUR TURN : Handling Actions
+### Lab : Handling Actions
 
-In the Pokemon games, your character can pick up and use items to affect your
- Pokemons' performance; a full list of in-game items can be found [here](http://pokemondb.net/item/all).
-In addition to tracking Pokemon collected, suppose that we also wanted our
- Pokedex to keep track of all of the items we've picked up so far.
-A Model, Adapter, and Test Fixture for this new 'item' resource are provided for
- you in this repo; an 'item' has the following data structure:
-
--   name : Name of the Item
--   category : What type of Item it is (e.g. 'Hold item', 'Battle item',
-     'General item')
--   effect : What the Item does
-
-In addition, a Template has been created for you at the route 'items'
- (`/items`).
-Add a link to it from your 'index' Template by dropping in this `{{#link-to}}`:
-
-```html
-<p>{{#link-to 'items'}} Items You've Collected {{/link-to}}</p>
-```
-
-The Route for this Template loads all instances of the 'item' resource within
- its `model` method.
-And as you can see, this Template uses a component called 'item-row'; this has
- also been provided for you.
-
-On your own,
-
-1.  Use the `{{#each}}` helper to pass each 'item' into each 'item-row'
-     Component; it should be available within the Component under the name
-     `each`.
-1.  Add `createItem` and `destroyItem` actions to the 'items' Route; each method
-     should print output of the form "Route Action : createItem".
-1.  Pass the `destroyItem` action into the 'item-row' Component, under the name
-     `routeDestroyItem`.
-1.  Create a new `destroyItem` action within the 'item-row' Component which
-     triggers the Route's `destoryItem` action.
-1.  Link this new `destroyItem` action to the button in the 'item-row' Template.
+Give Items the same treatment that we've just given Pokemon.
+Add `createItem`, `updateItem`, and `destroyItem` actions to the 'items'
+ Route; each method should print output of the form
+ "Route Action : createItem" to the console.
+Then, pass these actions into the 'item-row' Component and define
+ Component-level actions which can trigger the Route's actions.
+Finally, link the new `destroyItem` action to the button in the 'item-row'
+ Template.
 
 ## Non-CRUD Actions
 
