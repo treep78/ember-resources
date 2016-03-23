@@ -1,10 +1,10 @@
-<h4>#{{input value=pokemon.nationalPokeNum}} : {{input value=pokemon.name}}</h4>
-<p> Generation: {{input value=pokemon.generation}} </p>
-<button {{action 'updatePokemon'}}>EDIT</button>
-<button {{action 'destroyPokemon'}}>DESTROY</button>
+<h4>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</h4>
+<p> Generation: {{pokemon.generation}} </p>
+<button>EDIT</button>
+<button>DESTROY</button>
 <p>
-  Type(s): {{input value=pokemon.typeOne}}
+  Type(s): {{pokemon.typeOne}}
   {{#if twoTypes}}
-    / {{input value=pokemon.typeTwo}}
+    / {{pokemon.typeTwo}}
   {{/if}}
 </p>

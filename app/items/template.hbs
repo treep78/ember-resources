@@ -1,5 +1,3 @@
-{{item-form routeCreateItem='createItem'}}
-
 <table>
   <tr>
     <th>Name</th>
@@ -9,8 +7,6 @@
     <th>Delete?</th>
   </tr>
   {{#each model as |eachItem|}}
-    {{item-row item=eachItem
-        routeUpdateItem='updateItem'
-        routeDestroyItem='destroyItem'}}
+    {{item-row item=eachItem}}
   {{/each}}
 </table>
