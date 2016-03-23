@@ -668,6 +668,49 @@ actions: {
 As with Pokemon, make it possible to update Items by changing the `item-row`
  Component.
 
+## Ember Services and Dependency Injection
+
+"Data Down, Actions Up" is one philosophy for how data should move within an
+ Ember application, but although it's generally said that DDAU is preferred
+ when dealing with CRUD, there are a number of other situations when it's
+ necessary to share data across Components.
+
+One such example is that of an online shopping cart.
+A cart may not necessarily have any representation on the back-end of a store;
+ nevertheless, a user needs to be able to add, remove, or change quantities for
+ the items listed.
+
+Ember provides another approach that allow us to this and other UI concerns
+ without having to shoehorn our code into the DDAU mold.
+This approach, called 'Dependency Injection' involves forcibly adding new
+ dependencies for Components.
+
+```js
+export default Ember.Component.extend({
+  <someInjectedDependency>: Ember.inject.<something>
+});
+```
+
+One thing that you can inject into a Component is a **Service**.
+A Service is a special kind of singleton (i.e. only one in the app) Ember Object
+ that lives through the life of the application.
+Because Services have their own state, and can be injected into Components via
+ Dependency Injection, they are commonly used to _share_ that state across
+ multiple Components.
+
+Some more common use cases for injecting a Service include:
+
+-   Authentication
+-   Geolocation
+-   Managing Websockets or Sever-Sent Events
+-   Interacting with 3rd-party APIs (usually in a non-CRUD capacity)
+
+To create a new Service, you can simply generate one using `ember g`, e.g.
+  `ember generate service session`.
+Just like any other Ember Object, a Service can have its own properties and
+ methods.
+Then, once you've defined it, you can inject it using the syntax above.
+
 ## Additional Resources
 
 -   [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)
