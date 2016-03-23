@@ -217,35 +217,34 @@ Using the Rails API as a guide, create a new Adapter and Model so that we can
  use an Item resource on the front-end.
 Then, make it available in the `items` Route.
 
-Wow! We've really come a long way with Ember so far.
-We've learned all about the different parts of an Ember application: Templates,
- `Ember.View`, `Ember.Route`, `Ember.Router`, `Ember.Component`, `ember-data`,
-  `DS.Model`...
-Now it's finally time to tie all of this together through one of the core
- functionalities of most applications, CRUD.
+## Ember CRUD - Data Down, Actions Up (DDAU)
 
-Before talking about CRUD, though, we should start by talking about 'actions'.
+Now that we have models loaded in our Routes, it's finally time to tie all of
+ this together.
+
+Before talking about CRUD, though, we should start by talking about something
+ you touched on in the material on Components: 'actions'.
 'Actions' are a special class of trigger-able events that are handled by the
  `Ember.ActionHandler` Ember Class.
-Like normal events, actions will 'bubble' - move from the leaf (i.e. Template)
- to the root (i.e. the 'application' Route), until they are met by a matching
+Like normal events, actions 'bubble up', moving from the leaf (i.e. Template)
+ to the root (i.e. the 'application' Route) until they are met by a matching
  handler.
 
-In Ember 1, actions were used inside the Controller to control Model CRUD.
+In Ember 1, action handlers inside the Controller were used to perform CRUD on
+ the model.
 This made sense, since the Controller was responsible for managing all of the
- business data in our application; an action could be triggered in the Template,
- bubble up through the View, and reach a Controller, where it would cause the
- controller to manipulate Model data.
+ business data in our application, and since it mirrored how responsibilities
+ were broken out in Rails.
+An action could be triggered in a Template and bubble up to a
+ Controller, where it would cause that Controller to manipulate the given Model.
 
-However, with the growing role of Components in Ember 2, a lot of the
- functionality of Controllers has been made redundant, and the current plan for
- Ember 2 calls for Controllers to be phased out completely; as a result, we need
- another place to put action handlers for performing Model CRUD.
-Fortunately, Components and Routes both incorporate `Ember.ActionHandler`, so we
- can instead set our action handlers inside either of those objects.
-
-For simplicity's sake, we're going to put all handlers related to Model CRUD
- into the Route; any other handlers can be placed in either place.
+However, with the shift towards Components in Ember 2, a lot of the
+ functionality of Controllers has been made redundant and moved into other
+ entities within the app.
+In this case, Components and Routes both incorporate `Ember.ActionHandler`, so
+ we can instead set our action handlers there.
+For simplicity's sake, we'll put all handlers related to Model CRUD into the
+ Route; any other action handlers can be placed in either place.
 
 Defining Action handlers in a Route is very easy. Simply open up the `route.js`
  file and make the following addition:
@@ -266,57 +265,41 @@ export default Ember.Route.extend({
 });
 ```
 
-Inside each of these actions, we can add code to manipulate that Route's model
- (which, conveniently enough, is provided within the Route).
 To trigger an action, you can add an `{{action ... }}` helper to an element
  (usually a button) - this will cause that element to launch the action whenever
  it executes its defaults behavior (in the case of a button, being clicked).
 
-## Handling Actions in Practice
+In Ember applications that use Components (which will soon be all of them)
+the generally recommended strategy is to follow a 'data down, actions up'
+design pattern, which essentially means two things:
 
-This has all been fairly abstract, so let's bring it down to earth by looking
- at how this works in an app. But not just any app...
+1.  All Components look to their parent element as a source of data to bind to;
+    as a result, data changes propagate 'downwards' from parent to child.
+1.  Implicit in the first point is that all changes to date place in the parent.
+    In order to effect changes to the data in a parent element, Components
+    trigger their parents' actions; in this fashion, action invocations
+    propagate 'upwards' from child to parent.
 
-![Charmander Used 'Ember'](./readme-assets/charmander.jpeg)
-
-We're going to make a **Pokemon Directory (a.k.a. 'Pokedex')**, an application
- that keeps track of Pokemon that we've observed.
-This app will allows us to do the following CRUD operations:
-
--   Add a new Pokemon to the directory.
--   Edit an existing Pokemon.
--   Remove a Pokemon from the directory.
-
-As a first step for setting that up, let's give this application a structure for
- how it should handle actions; then, we can fill out the actions with whatever
- behavior that app requires.
-
-Let's take a look at our application as it stands right now.
-It seems that we already have a Mirage test fixture in place, along with a Model
- to represent a Pokemon and an Adapter to handle the API transactions.
-Additionally, we have several Templates in place (some of which are already
- nested).
-As a result, we can click around and see a list of the Pokemon in our test
- fixture.
+### Code-Along : Handling Actions
 
 Let's add some action handlers to our Route by opening up `app/pokemon/route.js`
  and adding the following:
 
 ```js
 actions: {
-  createPokemon: function(){
+  createPokemon: function() {
     console.log('Route Action : createPokemon');
   },
-  updatePokemon: function(){
+  updatePokemon: function() {
     console.log('Route Action : updatePokemon');
   },
-  destroyPokemon: function(){
+  destroyPokemon: function() {
     console.log('Route Action : destroyPokemon');
   }
 }
 ```
 
-Let's also add some HTML/Handlebars to the 'pokemon' Template:
+Let's also add some HTMLbars to the 'pokemon' Template:
 
 ```html
 <button {{action 'createPokemon'}}>CREATE</button>
@@ -330,7 +313,7 @@ If we click one of these buttons, it will trigger the corresponding action in
 
 As was mentioned, Routes are not the only things that can have actions;
  Components can have them too.
-Let's add some actions to the 'pokemon-snippet' Component:
+Let's add some actions to the 'pokemon-snippet' Component
 
 ```js
 actions: {
@@ -338,26 +321,31 @@ actions: {
     console.log('Component Action : updatePokemon');
   },
   destroyPokemon: function(){
-    console.log('Component Action : updatePokemon');
+    console.log('Component Action : destroyPokemon');
   }
 }
 ```
 
-and a new button to the Template for 'pokemon-snippet':
+and add two new buttons to the 'pokemon-snippet' Component's Template:
 
 ```html
-<strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-<button {{action 'updatePokemon'}}>EDIT</button>
-<button {{action 'destroyPokemon'}}>EDIT</button>
+<h4>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</h4>
 <p> Generation: {{pokemon.generation}} </p>
-<p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
+<button {{action 'updatePokemon'}}>EDIT</button>
+<button {{action 'destroyPokemon'}}>DESTROY</button>
+<p>
+  Type(s): {{pokemon.typeOne}}
+  {{#if twoTypes}}
+    / {{pokemon.typeTwo}}
+  {{/if}}
+</p>
 ```
 
 Clicking these new buttons triggers their respective actions in the Component.
 Simple enough!
 
 What if we want to trigger a Route action from within a Component?
-Because Components are essentially modular, this can only be accomplished by
+Because Components are essentially modular, this is accomplished by
  passing that action into the Component when the Component is created.
 Let's modify the 'pokemon' Template as follows:
 
@@ -390,16 +378,9 @@ actions: {
 
 As you can see, the Component accepts two types of inputs: data (such as
  `eachPokemon`) and references to actions (such as `'updatePokemon'`).
-In Ember applications that use Components (which will soon be all of them)
- the recommended strategy is to follow a 'data down, actions up' design pattern,
- which essentially means two things:
 
-1.  All Components look to their parent element as a source of data to bind to;
-     as a result, data changes propagate 'downwards' from parent to child.
-1.  Implicit in the first point is that all changes to date place in the parent.
-     In order to effect changes to the data in a parent element, Components
-     trigger their parents' actions; in this fashion, action invocations
-     propagate 'upwards' from child to parent.
+To actually perform the CRUD in the Route, you need to manipulate the store,
+ which is what we'll be looking at after the next lab.
 
 ### YOUR TURN : Handling Actions
 
