@@ -36,8 +36,10 @@ By the end of this session, you should be able to:
 
 1.  Fork and clone this repo.
 1.  Run `npm install` and `bower install`
+1.  Clone this [Rails API repo](https://github.com/ga-wdi-boston/ember-resources-api)
+     into a separate directory on your machine.
+1.  Run `bundle install` inside the Rails API repo.
 
-## The Shifting Landscape of Ember CRUD
 
 Wow! We've really come a long way with Ember so far.
 We've learned all about the different parts of an Ember application: Templates,
