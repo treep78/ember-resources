@@ -465,7 +465,7 @@ export default Ember.Route.extend({
 
 When we click the 'DELETE' button, the record for that Pokemon gets destroyed.
 
-### YOUR TURN : Destroying a Record
+### Lab : Destroy (DDAU)
 
 Let's revisit our 'item' resource. As you can see the table shows a list of five
  items that were loaded into the Mirage test fixture. In each row, we have a
