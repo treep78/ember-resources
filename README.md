@@ -32,13 +32,10 @@ By the end of this session, you should be able to:
 -   Add behavior to Route actions to perform CRUD on the Route's model.
 -   Create an Ember Service, and inject it into a Component.
 
-### Setup
+## Setup
 
 1.  Fork and clone this repo.
-1.  Run `npm install && bower install`
-1.  Run `ember install ember-legacy-views`
-1.  Run `ember install ember-cli-mirage`, but _do not_ overwrite the
-     `config.js` file. Additionally, delete the `scenarios` directory.
+1.  Run `npm install` and `bower install`
 
 ## The Shifting Landscape of Ember CRUD
 
