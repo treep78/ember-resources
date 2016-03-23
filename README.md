@@ -600,3 +600,8 @@ Let's give our app the ability to update an 'item'. Suppose we want to make it s
 ## Additional Resources
 - [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)
 - [Ember API : DS.store](http://emberjs.com/api/data/classes/DS.Store.html)
+
+## [License](LICENSE)
+
+Source code distributed under the MIT license. Text and other assets copyright
+General Assembly, Inc., all rights reserved.
