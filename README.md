@@ -208,6 +208,15 @@ export default Ember.Route.extend({
 });
 ```
 
+### Lab : Making an Item Model
+
+In addition to tracking the Pokemon we've seen and caught on our journey, the
+ PokeDex also keeps track of our current inventory of items.
+
+Using the Rails API as a guide, create a new Adapter and Model so that we can
+ use an Item resource on the front-end.
+Then, make it available in the `items` Route.
+
 Wow! We've really come a long way with Ember so far.
 We've learned all about the different parts of an Ember application: Templates,
  `Ember.View`, `Ember.Route`, `Ember.Router`, `Ember.Component`, `ember-data`,
