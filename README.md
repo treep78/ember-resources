@@ -615,242 +615,54 @@ Use the following HTML content as the basis for the Component's Template:
 <button>Create Item</button>
 ```
 
-## CRUD : Updating an Existing Record
+## Code-Along : Update (DDAU)
 
-Now that we've handled Create and Destroy, the last CRUD action to take care of
- is Update.
-There are several different ways to accomplish an update, depending on your UI,
- so let's start by making the following decision about how we want things to
- behave.
-**Keep in mind that these are just design decisions - your needs may differ,**
- **depending on your application.**
+Update is a bit of an oddball in that there are many different ways you can do
+ it, depending on your UI.
 
--   Updating, like destroying, is specific to one particular record, so it might
-     make sense to handle that behavior from within the 'pokemon-snippet'
-     Component.
--   Within the 'pokemon-snippet' Component, we should be able to toggle between
-     'editable' and 'not editable' states.
--   This state change should be controlled by the 'EDIT' button that we already
-     have.
--   When the 'pokemon-snippet' Component is in its 'not editable' state, it
-     should look the same as it currently does.
--   When the 'pokemon-snippet' Component is in its 'editable' state, every data
-     value should be replaced by an input box.
--   The values of those input boxes should at least be set initially to the
-     current values of those properties, and possibly should be bound
-     permanently to said values.
+To keep it simple, let's just tweak our `pokemon-snippet` component a little -
+ instead of having the attributes show up as text, let's make them input boxes.
 
-Given these assumptions/decisions, let's see if we can work our way towards
- working Update behavior.
+```html
+<h4>#{{input value=pokemon.nationalPokeNum}} : {{input value=pokemon.name}}</h4>
+<p> Generation: {{input value=pokemon.generation}} </p>
+<button {{action 'updatePokemon'}}>EDIT</button>
+<button {{action 'destroyPokemon'}}>DESTROY</button>
+<p>
+  Type(s): {{input value=pokemon.typeOne}}
+  {{#if twoTypes}}
+    / {{input value=pokemon.typeTwo}}
+  {{/if}}
+</p>
+```
 
-> Updating, like destroying, is specific to one particular record, so it might
->  make sense to handle that behavior from within the 'pokemon-snippet'
->  Component.
-
-> Within the 'pokemon-snippet' Component, we should be able to toggle between
->  'editable' and 'not editable' states.
-
-These indicate that we should have some sort of state property, attached to the
- 'pokemon-snippet' Component, which can be toggled by a button (implying that
- there must be a Component action to trigger the toggle).
-In that vein, let's add a new property and action to the 'pokemon-snippet'
- Component : `isEditable` and `toggleEditable`, respectively.
+Because of binding, updating the values of any of the input boxes will update
+ the values (in Ember) of the Pokemon that the Component is associated with.
+All that remains is adding some action handlers.
 
 ```js
-export default Ember.Component.extend({
-  tagName: 'li',
-  twoTypes: Ember.computed('pokemon.typeOne', 'pokemon.typeTwo', function(){
-    return this.get('pokemon.typeTwo') && this.get('pokemon.typeTwo') !== this.get('pokemon.typeOne');
-  }),
-  isExpanded: false,
-  isEditable: false,
-  actions: {
-    toggleExpanded: function(){
-      this.toggleProperty('isExpanded');
-    },
-    toggleEditable: function(){
-      this.toggleProperty('isEditable');
-    },
-    updatePokemon: function(){
-      console.log('Component Action : updatePokemon');
-      this.sendAction('routeUpdatePokemon');
-    },
-    destroyPokemon: function(){
-      console.log('Component Action : destroyPokemon');
-      this.sendAction('routeDestroyPokemon', this.get('pokemon'));
-    }
+// Component
+actions: {
+  updatePokemon: function(){
+    console.log('Component Action : updatePokemon');
+    this.sendAction('routeUpdatePokemon', this.get('pokemon'));
   }
-});
+}
 ```
-
-> This state change should be controlled by the 'EDIT' button that we already
->  have.
-
-Straightforward enough. Let's change the EDIT button so that it triggers the new
- `toggleEditable` action.
-
-```html
-<strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-<button {{action 'toggleExpanded'}}>
-  {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
-</button>
-{{#if isExpanded}}
-  <button {{action 'toggleEditable'}}>EDIT</button>
-  <button {{action 'destroyPokemon'}}>DELETE</button>
-  <p> Generation: {{pokemon.generation}} </p>
-  <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
-{{/if}}
-```
-
-> Although this wasn't mentioned as a requirement, it might be a little weird if
->  we were to set `isEditable` to true, and then for it to remain true after
->  we've collapsed and then reopened the Component.
-> Let's change our `toggleExpanded` action so that it sets `isEditable` to false
->  every time the Component is collapsed.
 
 ```js
-export default Ember.Component.extend({
-  // ...
-  isExpanded: false,
-  isEditable: false,
-  actions: {
-    toggleExpanded: function(){
-      this.toggleProperty('isExpanded');
-      if (!this.get('isExpanded')) {
-        this.set('isEditable', false);
-      }
-    },
-    // ...
-  }
-});
+// Route
+actions: {
+  updatePokemon: function(pokemon) {
+    console.log('Route Action : updatePokemon');
+    pokemon.save();
+  },
+}
 ```
 
-> When the 'pokemon-snippet' Component is in its 'not editable' state, it should
->  look the same as it currently does.
-> When the 'pokemon-snippet' Component is in its 'editable' state, every data
->  value should be replaced by an input box.
+> NOTE: Make sure that your API's CORS policy allows PUT as well as PATCH -
+>  ActiveModelAdapter **only** uses PUT.
 
-There are probably a couple of ways you could do this, but what would probably
- by easiest is simple to have two separate sections of the Component's Template,
- switched by an `{{#if}}` or `{{#unless}}` helper.
-Since the normal state should show up when the Component is _not_ editable, it
- would probably make sense to use `{{#unless}}`.
-
-```html
-{{#unless isEditable}} {{!-- Non-editable Version --}}
-  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-  <button {{action 'toggleExpanded'}}>
-    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
-  </button>
-  {{#if isExpanded}}
-    <button {{action 'toggleEditable'}}>EDIT</button>
-    <button {{action 'destroyPokemon'}}>DELETE</button>
-    <p> Generation: {{pokemon.generation}} </p>
-    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
-  {{/if}}
-{{/unless}}
-```
-
-To handle the opposite case, we can add an `{{else}}` helper.
-
-```html
-{{#unless isEditable}} {{!-- Non-editable Version --}}
-  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-  <button {{action 'toggleExpanded'}}>
-    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
-  </button>
-  {{#if isExpanded}}
-    <button {{action 'toggleEditable'}}>EDIT</button>
-    <button {{action 'destroyPokemon'}}>DELETE</button>
-    <p> Generation: {{pokemon.generation}} </p>
-    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
-  {{/if}}
-{{else}}  {{!-- Editable Version --}}
-  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-  <button {{action 'toggleExpanded'}}>
-    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
-  </button>
-  {{#if isExpanded}}
-    <button {{action 'toggleEditable'}}>EDIT</button>
-    <button {{action 'destroyPokemon'}}>DELETE</button>
-    <p> Generation: {{pokemon.generation}} </p>
-    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
-  {{/if}}
-{{/unless}}
-```
-
-Now we can swap all of the normal HTML-escaped values (`{{ someValue }}`) for
- `{{input}}` helpers, so that they can generate new `<input>` elements.
-
-```html
-{{#unless isEditable}} {{!-- Non-editable Version --}}
-  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-  <button {{action 'toggleExpanded'}}>
-    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
-  </button>
-  {{#if isExpanded}}
-    <button {{action 'toggleEditable'}}>EDIT</button>
-    <button {{action 'destroyPokemon'}}>DELETE</button>
-    <p> Generation: {{pokemon.generation}} </p>
-    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
-  {{/if}}
-{{else}}  {{!-- Editable Version --}}
-  <strong>
-    #{{input}} : {{input}}
-  </strong>
-  <button {{action 'toggleExpanded'}}>
-    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
-  </button>
-  <button {{action 'toggleEditable'}}>EDIT</button>
-  <button {{action 'destroyPokemon'}}>DELETE</button>
-  <p> Generation: {{input}} </p>
-  <p> Type: {{input}} / {{input}} </p>
-{{/unless}}
-```
-
-Let's also change the 'EDIT' button to say 'CONFIRM EDIT' in the isEditable
- case.
-
-> The values of those input boxes should at least be set initially to the
->  current values of those properties, and possibly should be bound permanently
->  to said values.
-
-The `{{input}}` helper allows for binding the value of an input box to another
- variable, so for simplicity's sake, let's just opt for that solution and bind
- all of the input boxes to their respective properties in the Component.
-
-```html
-{{#unless isEditable}} {{!-- Non-editable Version --}}
-  <strong>#{{pokemon.nationalPokeNum}} : {{pokemon.name}}</strong>
-  <button {{action 'toggleExpanded'}}>
-    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
-  </button>
-  {{#if isExpanded}}
-    <button {{action 'toggleEditable'}}>EDIT</button>
-    <button {{action 'destroyPokemon'}}>DELETE</button>
-    <p> Generation: {{pokemon.generation}} </p>
-    <p> Type: {{pokemon.typeOne}} {{#if twoTypes}}/ {{pokemon.typeTwo}}{{/if}} </p>
-  {{/if}}
-{{else}}  {{!-- Editable Version --}}
-  <strong>
-    #{{input valueBinding='pokemon.nationalPokeNum'}} : {{input valueBinding='pokemon.name'}}
-  </strong>
-  <button {{action 'toggleExpanded'}}>
-    {{#unless isExpanded}}EXPAND{{else}}COLLAPSE{{/unless}}
-  </button>
-  <button {{action 'toggleEditable'}}>CONFIRM EDIT</button>
-  <button {{action 'destroyPokemon'}}>DELETE</button>
-  <p> Generation: {{input valueBinding='pokemon.generation'}} </p>
-  <p> Type: {{input valueBinding='pokemon.typeOne'}} / {{input valueBinding='pokemon.typeTwo'}} </p>
-{{/unless}}
-```
-
-> Guess we didn't need those `updatePokemon` actions after all - let's remove
->  them.
-> Let's also get rid of the three buttons we added to the 'pokemon' Template,
->  since those were just for testing.
-> Once we're done with those things we should be good to go, since the app can
->  now Create, Update, and Destroy!
 
 ### YOUR TURN : Updating an Existing Record
 
