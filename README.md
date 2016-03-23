@@ -21,15 +21,16 @@ By now, you have already learned how to:
 -   Register actions and click handlers on component objects.
 -   Pass data from routes to components, and from components to components.
 
-### Objectives
+## Objectives
 
-By the end of this lesson, students should be able to:
+By the end of this session, you should be able to:
 
--   Create Route actions and trigger them from Templates.
--   Create Component actions and trigger them from Component Templates.
--   Trigger Route actions from Component actions.
--   Explain the meaning of the expression "actions up, data down".
+-   Generate a Model to represent a resource on the front-end.
+-   Create an Adapter to connect your Model(s) to an API.
+-   Make Models accessible in templates by loading them through Routes.
+-   Create CRUD actions on a Route, and trigger them from Components.
 -   Add behavior to Route actions to perform CRUD on the Route's model.
+-   Create an Ember Service, and inject it into a Component.
 
 ### Setup
 
