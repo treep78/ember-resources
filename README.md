@@ -74,6 +74,140 @@ This tool also has lots of other useful information about the Pokemon, including
 
 Together, we're going to make a simplified version of the PokeDex in Ember!
 
+### Code-Along : Making a Pokemon Model
+
+Once you start your Rails server, that API will begin serving up JSON at
+ localhost:3000.
+If we navigate to [`http://localhost:3000/pokemon`](http://localhost:3000/pokemon),
+ we might see something like this:
+
+```javascript
+{
+  "pokemon": [
+    {
+      "id": 1,
+      "name": "Bulbasaur",
+      "national_poke_num": 1,
+      "type_one": "GRASS",
+      "type_two": "POISON",
+      //...
+    },
+    {
+      "id": 2,
+      "name": "Ivysaur",
+      "national_poke_num": 2,
+      "type_one": "GRASS",
+      "type_two": "POISON",
+      // ...
+    }
+  ]
+}
+```
+
+To establish a line of communication with this API, we're going to need an
+ **Adapter**.
+
+```bash
+ember g adapter pokemon
+```
+
+This creates a new `adapter.js` file inside `app/pokemon`.
+The new Adapter is subclassed from ApplicationAdapter, the Adapter defined in
+ `app/application`.
+
+Inside `adapter.js`, we'll need to put some information about the API we want to
+ use for the Pokemon resource - specifically, what host URL to use.
+It's important to note that Ember has a bit of a weird quirk when generating
+ adapters -- it doesn't account for using a pod-based file structure when
+ generating the reference URL to application adapter -- so we'll have to fix it
+ by setting that URL to `../application/adapter` instead of `./application`.
+
+Finally, because Pokemon is 'uncountable' (i.e. the plural of Pokemon is
+ also Pokemon) we need to tell our adapter that it should make requests to
+ `http://localhost:3000/pokemon` instead of `.../pokemons`.
+Finally, as just a weird quirk of Ember's
+
+```js
+import Ember from 'ember';
+import ApplicationAdapter from '../application/adapter';
+
+Ember.Inflector.inflector.uncountable('pokemon');
+
+export default ApplicationAdapter.extend({
+  host: 'http://localhost:3000'
+});
+```
+
+That's it!
+Our Ember app now knows that when it wants to make Pokemon-related requests, it
+ should direct them to `http://localhost:3000/pokemon/...`.
+
+The next step is to create a Model for Pokemon so that we can interact with it
+ in our Ember app.
+Generating a model is just as easy as generating an adapter was.
+
+```bash
+ember g model pokemon
+```
+
+This will create a new `model.js` file inside `app/pokemon`.
+Here is where we'll need to specify all of the properties that we want the model
+ to have.
+If we look at the JSON data coming from the API, we can see that there are a
+ number of properties being returned: `id`, `name`, `national_poke_num`,
+ `type_one`, `type_two`, and more.
+
+We can pick whichever of these we want to include in the model, but for the sake
+ of being completionists, let's add _all_ of the properties.
+
+```js
+import DS from 'ember-data';
+
+export default DS.Model.extend({
+  nationalPokeNum: DS.attr('number'),
+  name: DS.attr('string'),
+  typeOne: DS.attr('string'),
+  typeTwo: DS.attr('string')
+  // ...
+});
+```
+
+`DS.attr` is how we define attributes for our models.
+The default types are 'number', 'string', 'boolean', and 'date', but you can
+ define your own if you really need to.
+You can also use `DS.attr` to specify a default value for a given
+ attribute by passing in an optional object as a second argument.
+
+Once you have your model, you can easily create Computed Properties for it just
+ like with any other Ember Object. Just don't forget to import Ember.
+
+```js
+import Ember from 'ember';
+// ...
+export default DS.Model.extend({
+  // ...
+  types: Ember.computed.collect('typeOne', 'typeTwo')
+});
+```
+
+Now that we have a Pokemon model, we want to be able to use its data in our
+ templates.
+
+As you saw in the material on routing, each Route has a `model` function that
+ exposes data to the templates.
+Each Route has a `store` property which refers to whatever data store your
+ application is using (in this case, ember-data), so to make the Pokemon model
+ available in the `pokemon` route, we reference the store and query it for all
+ Pokemon instances.
+
+```js
+export default Ember.Route.extend({
+  model: function(){
+    return this.store.findAll('pokemon');
+  }
+});
+```
+
 Wow! We've really come a long way with Ember so far.
 We've learned all about the different parts of an Ember application: Templates,
  `Ember.View`, `Ember.Route`, `Ember.Router`, `Ember.Component`, `ember-data`,
