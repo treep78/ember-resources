@@ -477,43 +477,43 @@ In the previous exercise, we set it up so that clicking that button would
 On your own, edit the `destroyItem` actions inside the 'item-row' Component and
  'items' Route so that clicking the 'X' button in a given row destroys that row.
 
-## CRUD : Adding a New Record
+### Code-Along : Create (DDAU)
 
 Adding a new Pokemon is a behavior tied to the _list_ of Pokemon instead of any
  particular Pokemon, so it would make the most sense to handle that behavior
  outside of the 'pokemon-snippet' Component.
-Suppose that we wanted this to be routable as well, e.g. `/pokemon/new`, so that
- the URL can be bookmarked.
-In that case, we would need to create a new Template using
- `ember g template pokemon/new`.
 
-Let's populate that new Template with the following:
+We can create a new Component called 'pokemon-form' using
+
+```bash
+ember g component pokemon-form
+```
+
+Let's populate that new Component's Template with the following:
 
 ```html
 <h5> Add a Pokemon to the directory! </h5>
-{{input placeholder='National Pokemon Number'}}
-{{input placeholder='Name'}}
-{{input placeholder='Type One'}}
-{{input placeholder='Type Two'}}
-{{input placeholder='Generation'}}
+<div>
+  {{input placeholder='National Pokemon Number'}}
+  {{input placeholder='Name'}}
+  {{input placeholder='Type One'}}
+  {{input placeholder='Type Two'}}
+  {{input placeholder='Generation'}}
+  {{input placeholder='Total Points'}}
+  {{input placeholder='Base HP'}}
+  {{input placeholder='Base Attack'}}
+  {{input placeholder='Base Defense'}}
+  {{input placeholder='Base Sp. Attack'}}
+  {{input placeholder='Base Sp. Defense'}}
+  {{input placeholder='Base Speed'}}
+</div>
 <button {{action 'createPokemon'}}> Add a New Pokemon </button>
-
-{{#link-to 'pokemon'}}Back{{/link-to}}
 ```
 
-Additionally, let's create an 'index' Template on Pokemon, with a link pointing
- to this new 'pokemon/new' Template.
-We can do this by running `ember g template pokemon/index`, and filling the
- template with the following:
+We can then reference this new Component from the `/pokemon` Template:
 
 ```html
-{{#link-to 'pokemon.new'}}Add a new Pokemon{{/link-to}}
-```
-
-Last, but certainly not least, we need to (a) add an `{{outlet}}` to the
- 'pokemon' Template
-
-```html
+{{pokemon-form routeCreatePokemon='createPokemon'}}
 <ul>
 {{#each model as |eachPokemon|}}
   {{pokemon-snippet pokemon=eachPokemon
@@ -522,30 +522,13 @@ Last, but certainly not least, we need to (a) add an `{{outlet}}` to the
   }}
 {{/each}}
 </ul>
-
-{{outlet}}
-```
-
-and (b) update the Ember Router to point to this new Template:
-
-```js
-Router.map(function() {
-  this.route('pokemon', function(){
-    this.route('new');
-  });
-});
 ```
 
 As you can see, clicking the button labeled 'Add a New Pokemon' triggers the
- `createPokemon` action.
-How do we then translate that into performing CRUD on the model?
+ Route's `createPokemon` action.
 
-The method to add a new record to the data store is
- `<store>.createRecord(<type of record>, <new record data>).save()`,
- so let's leverage that inside our `createPokemon` Route action.
-
-> .save() is necessary in order for the data store to give your new Pokemon an
->  `id`
+Adding a new record to the data store looks like
+ `<store>.createRecord(<type of record>, <new record data>).save()`
 
 ```js
 export default Ember.Route.extend({
@@ -578,90 +561,43 @@ As you can see, this will create a new Pokemon with the specified information
 How do we instead tell it to use the information specified in the `<input>`
  fields?
 
-This is a great use case for a Component - we could take data in our Template
- and bind it to the Component's own properties.
-However, we also specified that we want this to be routable, and Components are
- not yet routable.
-We could move the whole contents of `pokemon/new` into a Template, but an
- equally valid approach might be to store that data (while we still can) in a
- View.
-
-Let's generate a new View for `pokemon/new` (`ember g view pokemon/new`) and
- fill it as follows:
+The answer is: **binding**. Component properties are automatically bound to
+ values in their Template, so all you need to do is have an object inside the
+ Component that the form fields can hook into.
 
 ```js
-import Ember from 'ember';
-
-export default Ember.View.extend({
-  newPokemon: {
-    nationalPokeNum: null,
-    name: null,
-    typeOne: null,
-    typeTwo: null,
-    generation: null
+export default Ember.Component.extend({
+  form: {},
+  actions: {
+    createPokemon: function(){
+      console.log('Component Action : createPokemon');
+      this.sendAction('routeCreatePokemon', this.get('form'));
+      this.set('form', {});
+    }
   }
 });
 ```
-
-This will give us a place to store our data.
-Now we have a problem, though - how do we sync the values of the `<input>`
- fields to our new View property?
-The answer is: **binding**. We can set `valueBinding` properties on each
- `<input>` element, persistently syncing them to properties on
- `view.newPokemon`.
 
 ```html
 <h5> Add a Pokemon to the directory! </h5>
-{{input placeholder='National Pokemon Number' valueBinding='view.newPokemon.nationalPokeNum' }}
-{{input placeholder='Name' valueBinding='view.newPokemon.name' }}
-{{input placeholder='Type One' valueBinding='view.newPokemon.typeOne' }}
-{{input placeholder='Type Two' valueBinding='view.newPokemon.typeTwo' }}
-{{input placeholder='Generation' valueBinding='view.newPokemon.generation' }}
-<button {{action 'createPokemon' view.newPokemon}}> Add a New Pokemon </button>
-
-{{#link-to 'pokemon'}}Back{{/link-to}}
+<div>
+  {{input placeholder='National Pokemon Number' value=form.nationalPokeNum}}
+  {{input placeholder='Name' value=form.name}}
+  {{input placeholder='Type One' value=form.typeOne}}
+  {{input placeholder='Type Two' value=form.typeTwo}}
+  {{input placeholder='Generation' value=form.generation}}
+  {{input placeholder='Total Points' value=form.totalPoints}}
+  {{input placeholder='Base HP' value=form.baseHp}}
+  {{input placeholder='Base Attack' value=form.baseAttack}}
+  {{input placeholder='Base Defense' value=form.baseDefense}}
+  {{input placeholder='Base Sp. Attack' value=form.baseSpAttack}}
+  {{input placeholder='Base Sp. Defense' value=form.baseSpDefense}}
+  {{input placeholder='Base Speed' value=form.baseSpeed}}
+</div>
+<button {{action 'createPokemon'}}> Add a New Pokemon </button>
 ```
 
-We can verify that our binding is working correctly by temporarily adding
- `{{view.newPokemon.name}}` to our `pokemon/new` Template - if it syncs up with
- the name that's in the form, you're good to go.
-
-The next step is to pass the View's `newPokemon` property into the `{{action}}`
- helper so that it can get shared with the Route's `createPokemon` action.
-
-```html
-<button {{action 'createPokemon' view.newPokemon}}> Add a New Pokemon </button>
-```
-
-Finally, we need to update our Route's `createPokemon` action so that it can
- accept `view.newPokemon` as an argument.
-
-```js
-export default Ember.Route.extend({
-  model: function(){
-    return this.store.findAll('pokemon');
-  },
-  actions: {
-    createPokemon: function(newPokemonData){
-      console.log('Route Action : createPokemon');
-      // var newPokemon = this.store.createRecord('pokemon', {
-      //   nationalPokeNum: 201,
-      //   name: 'Unown',
-      //   typeOne: 'PSYCHIC',
-      //   typeTwo: '',
-      //   generation: 2
-      // });
-      var newPokemon = this.store.createRecord('pokemon', newPokemonData);
-      newPokemon.save().then(function(){
-        console.log('record created');
-      });
-    },
-    // ...
-  }
-});
-```
-
-Now we can create new Pokemon records by filling out our form!
+Now we can create new Pokemon records by filling out our form.
 
 ### YOUR TURN : Adding a New Record
 
