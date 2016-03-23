@@ -663,19 +663,10 @@ actions: {
 > NOTE: Make sure that your API's CORS policy allows PUT as well as PATCH -
 >  ActiveModelAdapter **only** uses PUT.
 
+### Lab : Update (DDAU)
 
-### YOUR TURN : Updating an Existing Record
-
-Let's give our app the ability to update an 'item'.
-Suppose we want to make it so that when an 'item-row' is double-clicked, it
- toggles back and forth between being "editable" and "not editable", in much the
- same way that the 'pokemon-snippet' Component did.
-When the 'item-row' Component is in its "editable" mode, the data values inside
- each `<td>` should be replaced with a form field (`<input>` for 'Name' and
- 'Category', `<textarea>` for 'Effects') whose values are bound to the
- properties of the Component.
-In either mode ("editable"/"not editable"), the 'X' button should be visible and
- should act normally.
+As with Pokemon, make it possible to update Items by changing the `item-row`
+ Component.
 
 ## Additional Resources
 
