@@ -453,10 +453,10 @@ export default Ember.Route.extend({
   actions: {
     // ...
     destroyPokemon: function(id){
-      console.log('Route Action : destroyPokemon => destroying record with id ' + pokemon.get('id'));
+      console.log('Route Action : destroyPokemon');
       this.store.findRecord('pokemon', id).then(function(pokemon){
         pokemon.destroyRecord();
-        console.log('record destroyed');
+        console.log(`record ${id} destroyed`);
       });
     }
   }
