@@ -40,6 +40,37 @@ By the end of this session, you should be able to:
      into a separate directory on your machine.
 1.  Run `bundle install` inside the Rails API repo.
 
+## ember-data and CRUD
+
+In the past few days, you've seen a whole lot of Ember's 'view' layer - the
+ system governing how Ember responds to user behavior and controls what HTML
+ gets rendered in the browser.
+
+While this is all very nice, it's meaningless without a back-end.
+That's where Ember's 'data' layer comes in, as implemented by an add-on library
+ to Ember called `ember-data`.
+
+`ember-data` provides several Ember Classes for handling the interchange of
+ information between the front-end and the back-end, most notably Models (which
+ represent back-end resources as Ember Objects) and Adapters (which manage the
+ actual interactions with the underlying APIs).
+
+To learn about how Ember's data layer works, we're going to build an application
+ together...
+
+![Charmander Used 'Ember'](./readme-assets/charmander.jpeg)
+
+For those of you who aren't familiar with the Pokemon games, the premise is that
+ the main character is on an adventure to capture and train wild monsters called
+ Pokemon, in order to pit them against other Pokemon on a quest to become the
+ very best (like no one ever was).
+
+As players encounter different Pokemon, they use a tool called a 'PokeDex' to
+ keep track of the different monsters that they've seen and caught.
+This tool also has lots of other useful information about the Pokemon, including
+ their name, their officially designated number, and fighting stats.
+
+Together, we're going to make a simplified version of the PokeDex in Ember!
 
 Wow! We've really come a long way with Ember so far.
 We've learned all about the different parts of an Ember application: Templates,
