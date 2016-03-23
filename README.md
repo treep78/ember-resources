@@ -398,11 +398,7 @@ Finally, link the new `destroyItem` action to the button in the 'item-row'
 Now let's add some functionality behind those Route actions - any time the
  `destroyPokemon` Route action is triggered, we destroy a particular Pokemon.
 The way to destroy a given record from the data store is
- `<record>.destroyRecord()`. However, before we can destroy a record, we need to
- find it; we can do this using `<store>.findRecord(<type of record>, <id>)`
- (when invoked from a Route, the store is accessible at `this.store`).
-However, the `findRecord` method returns a Promise, so we'll need handle that
- Promise in the usual way.
+ `<record>.destroyRecord()`.
 
 ```js
 export default Ember.Route.extend({
@@ -411,19 +407,16 @@ export default Ember.Route.extend({
   },
   actions: {
     // ...
-    destroyPokemon: function(id){
+    destroyPokemon: function(pokemon){
       console.log('Route Action : destroyPokemon');
-      this.store.findRecord('pokemon', id).then((pokemon) => {
-        this.get('store').unloadRecord(pokemon);
-        console.log(`record ${id} destroyed`);
-      });
+      pokemon.destroyRecord();
     }
   }
 });
 ```
 
-We're missing one critical piece of information : the `id` of
- the particular Pokemon we want to destroy.
+We're missing one critical piece of information : the particular Pokemon we want
+ to destroy.
 We need to pass that information from the 'pokemon-snippet' Component
  (which has access to that particular record) back up to the Route.
 We can do this by passing additional arguments to `sendAction`.
@@ -438,7 +431,7 @@ export default Ember.Component.extend({
     // ...
     destroyPokemon: function(){
       console.log('Component Action : destroyPokemon');
-      this.sendAction('routeDestroyPokemon', this.get('pokemon').get('id'));
+      this.sendAction('routeDestroyPokemon', this.get('pokemon'));
     }
   }
 });
@@ -453,12 +446,9 @@ export default Ember.Route.extend({
   },
   actions: {
     // ...
-    destroyPokemon: function(id){
+    destroyPokemon: function(pokemon){
       console.log('Route Action : destroyPokemon');
-      this.store.findRecord('pokemon', id).then((pokemon) => {
-        this.get('store').unloadRecord(pokemon);
-        console.log(`record ${id} destroyed`);
-      });
+      pokemon.destroyRecord();
     }
   }
 });

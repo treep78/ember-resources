@@ -14,12 +14,9 @@ export default Ember.Route.extend({
       console.log('Route Action : updatePokemon');
       pokemon.save();
     },
-    destroyPokemon: function(id){
+    destroyPokemon: function(pokemon){
       console.log('Route Action : destroyPokemon');
-      this.store.findRecord('pokemon', id).then((pokemon) => {
-        this.get('store').unloadRecord(pokemon);
-        console.log(`record ${id} destroyed`);
-      });
+      pokemon.destroyRecord();
     }
   }
 });

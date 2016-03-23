@@ -9,8 +9,7 @@ export default Ember.Component.extend({
     },
     destroyItem: function(){
       console.log('Component Action : destroyItem');
-      this.sendAction('routeDestroyItem',
-        this.get('item').get('id'));
+      this.sendAction('routeDestroyItem', this.get('item'));
     }
   }
 });

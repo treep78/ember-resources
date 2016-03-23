@@ -17,7 +17,7 @@ export default Ember.Route.extend({
     destroyItem: function(id){
       console.log('Route Action : destroyItem');
       this.store.findRecord('item', id).then((item) => {
-        this.store.unloadRecord(item);
+        this.store.deleteRecord(item);
         console.log(`record ${id} destroyed`);
       });
     }

@@ -12,8 +12,7 @@ export default Ember.Component.extend({
     },
     destroyPokemon: function(){
       console.log('Component Action : destroyPokemon');
-      this.sendAction('routeDestroyPokemon',
-        this.get('pokemon').get('id'));
+      this.sendAction('routeDestroyPokemon', this.get('pokemon'));
     }
   }
 });
