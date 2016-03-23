@@ -10,21 +10,16 @@ This is accomplished through a data layer, which for Ember is a library called
 In this session, we'll look at how to use ember-data to set up front-end models
  and perform CRUD actions on them.
 
-## Lesson Details
+## Prerequisites
 
-### Foundations
+By now, you have already learned how to:
 
-At this point, students have already learned how to:
-
--   Configure the Ember Router to point to a new Template.
--   Use an Ember View to handle events triggered within a routable template.
 -   Create nested view states and route to them appropriately.
--   Set up resource routes (with their respective Ember Routes).
--   Create Ember Components to represent UI elements and encapsulate related
-     data and behavior.
--   Use `ember-data` to set up Models representing business data.
--   Link the `ember-data` data store to a JSON API through an Adapter.
--   Set up a mock back-end using `ember-cli-mirage`
+-   Set up resource routes.
+-   Model the user interface using components.
+-   Represent visual hierarchies with nested components.
+-   Register actions and click handlers on component objects.
+-   Pass data from routes to components, and from components to components.
 
 ### Objectives
 
