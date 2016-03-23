@@ -39,6 +39,8 @@ By the end of this session, you should be able to:
 1.  Clone this [Rails API repo](https://github.com/ga-wdi-boston/ember-resources-api)
      into a separate directory on your machine.
 1.  Run `bundle install` inside the Rails API repo.
+1.  Run `rake db:create`, `rake db:migrate`, and `rake db:example:all` to set up
+     the Rails API's database.
 
 ## ember-data and CRUD
 
