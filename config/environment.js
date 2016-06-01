@@ -2,7 +2,7 @@
 
 module.exports = function(environment) {
   var ENV = {
-    modulePrefix: 'ember-resources',
+    modulePrefix: 'ga-wdi-boston.ember-resources',
     environment: environment,
     baseURL: '/',
     locationType: 'auto',
