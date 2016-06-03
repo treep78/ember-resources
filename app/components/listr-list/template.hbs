@@ -1,0 +1,9 @@
+<h2>{{list.title}}</h2>
+
+<ul>
+  {{#each list.items as |item|}}
+    {{listr-list/item item=item}}
+  {{/each}}
+</ul>
+
+{{listr-list/item/new list=list submit="createItem"}}
