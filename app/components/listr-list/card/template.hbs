@@ -1,3 +1,8 @@
 {{#link-to 'list' list}}
   <h2>{{list.title}}</h2>
 {{/link-to}}
+
+<button class="btn btn-danger"
+        {{action "delete"}}>
+  Delete
+</button>
