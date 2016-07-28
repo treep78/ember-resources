@@ -1,7 +1,16 @@
+{{! list component }}
 <h2>{{list.title}}</h2>
 
 <ul>
   {{#each list.items as |item|}}
-    {{listr-list/item item=item}}
+    {{listr-list/item item=item
+                      click="clickItem"
+                      delete="deleteItem"}}
   {{/each}}
 </ul>
+
+<form {{action "submit" on="submit"}}>
+  {{input placeholder="New item"
+          class="input-group form-control"
+          value=form.content}}
+</form>

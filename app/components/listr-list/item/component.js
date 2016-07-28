@@ -1,24 +1,19 @@
+// item component
 import Ember from 'ember';
 
 export default Ember.Component.extend({
+  tagName: 'li',
   classNameBindings: ['done'],
 
   done: Ember.computed.alias('item.done'),
-
+  // click: references a function by its passed in name
   actions: {
-    toggleDone () {
-      this.get('item').toggleProperty('done');
-      this.get('item').save();
+    click () {
+      this.sendAction('click', this.get('item'));
+    },
 
-      // let id = Ember.get(this, 'item.id');
-      // let store = Ember.get(this, 'store');
-      //
-      // store.findRecord('item', id)
-      // .then((item) => {
-      //   item.toggleProperty('done');
-      //   return item;
-      // })
-      // .then((item) => item.save());
+    delete () {
+      this.sendAction('delete', this.get('item'));
     },
   },
   store: Ember.inject.service(),
