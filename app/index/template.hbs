@@ -1,5 +1,8 @@
-<h1>Listr</h1>
+<div class="container">
 
-<p>
-  Choose a list below to get started.
-</p>
+  <h2>ListR</h2>
+  {{#each model as |list|}}
+    {{listr-list list=list}}
+  {{/each}}
+
+</div>
