@@ -1,3 +1,10 @@
+.listr {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 40px auto;
+  max-width: 650px;
+}
+
 .list-detail-hidden :not(:first-child) {
   display: none;
 }
