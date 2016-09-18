@@ -69,10 +69,6 @@ ember generate route lists
 
 ### Get and display list data from the listr-api
 
-The README for the API shows us the data we can expect at [GET
-/lists](https://github.com/ga-wdi-boston/listr-api#get-lists). Note that the
-items returned are just ids.
-
 1.  Generate a `list` model (for now, we'll leave items off)
 1.  Generate a `listr-list/card` component as the top-level interface to lists
 1.  Copy the list title display to `listr-list/card` (without any action)
@@ -82,6 +78,24 @@ items returned are just ids.
 ```sh
 ember generate model list title:string hidden:boolean
 ```
+
+This will create a new `model.js` file inside `app/list`. The README for the API
+shows us the data we can expect at [GET
+/lists](https://github.com/ga-wdi-boston/listr-api#get-lists). Note that the
+items returned are just ids.  We specified the properties that we want the
+`ember-data` model to have. We could _all_ of the properties from the API, but
+we're leaving off items because we haven't created and `item` model, yet.
+
+`DS.attr` is how we define attributes for our models. The default types are
+'number', 'string', 'boolean', and 'date', but we can define our own if we
+really need to. We can also use `DS.attr` to specify a default value for a
+given attribute by passing in an optional object as a second argument.
+
+As we saw in the material on routing, each Route has a `model` method that
+exposes data to the template. Each Route also has a `store` property which
+refers to whatever data store our application is using (in this case,
+ember-data), so to make the List model available in the `lists` route, we
+reference the store and query it for all instances.
 
 ```js
 export default Ember.Route.extend({
@@ -132,39 +146,6 @@ ember generate route list
 
 Now that we've refactored ListR to use data from the API, we'll move on to
 persisting changes.
-
-### Code-Along: Making a List Model
-
-To establish a line of communication with this API, we're going to need an
- **Adapter**.
-
-```bash
-ember generate adapter application
-```
-
-```bash
-ember generate model list
-```
-
-This will create a new `model.js` file inside `app/list`. Here is where we'll
-need to specify all of the properties that we want the model to have. If we look
-at the JSON data coming from the API, we can see that there are a number of
-properties being returned. We can pick whichever of these we want to include in
-the model, but for the sake of being completionists, let's add _all_ of the
-properties.
-
-`DS.attr` is how we define attributes for our models. The default types are
-'number', 'string', 'boolean', and 'date', but you can define your own if you
-really need to. You can also use `DS.attr` to specify a default value for a
-given attribute by passing in an optional object as a second argument.
-
-As you saw in the material on routing, each Route has a `model` function that
-exposes data to the templates. Each Route has a `store` property which refers to
-whatever data store your application is using (in this case, ember-data), so to
-make the List model available in the `lists` route, we reference the store
-and query it for all instances.
-
-### Lab: Use the List Model in A Singular Route
 
 ## Ember CRUD - Data Down, Actions Up (DDAU)
 
@@ -226,7 +207,60 @@ pattern, which essentially means two things:
     Components trigger their parents' actions; in this fashion, action
     invocations propagate 'upwards' from child to parent.
 
-## Code-Along: Handling UI State
+### Persist item changes to the API
+
+1.  In the `listr-list/item` component
+    1.  Make `listItemCompleted` a computed property alias in the item component
+    1.  Change toggleDone to send that action up
+1.  In the `listr-list` component
+    1.  Add `toggleDone='toggleItemDone'` to invoking `listr-list/item`
+    1.  Add the toggleItemDone action to send the action up
+1.  In the `list` route
+    1.  Add `toggleItemDone='toggleItemDone'` to invoking `listr-list`
+    1.  Add the toggleItemDone action the route
+
+```diff
+ export default Ember.Component.extend({
+   tagName: 'li',
+   classNameBindings: ['listItemCompleted'],
+-  listItemCompleted: false,
++  listItemCompleted: Ember.computed.alias('item.done'),
+   actions: {
+     toggleDone () {
+-      return this.toggleProperty('listItemCompleted');
++      return this.sendAction('toggleDone', this.get('item'));
+     },
+   },
+ });
+```
+
+```diff
+   classNameBindings: ['listDetailHidden'],
+   listDetailHidden: false,
+   actions: {
++    toggleItemDone (item) {
++      return this.sendAction('toggleItemDone', item);
++    },
++
+   toggleListDetail () {
+     return this.toggleProperty('listDetailHidden');
+   },
+```
+
+```diff
+   model (params) {
+     return this.get('store').findRecord('list', params.list_id);
+   },
++
++  actions: {
++    toggleItemDone (item) {
++      item.toggleProperty('done');
++      item.save();
++    },
++  },
+ });
+```
+
 
 ## Additional Resources
 
