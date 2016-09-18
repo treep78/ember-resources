@@ -28,16 +28,15 @@ By the end of this session, you should be able to:
 -   Make Models accessible in templates by loading them through Routes.
 -   Create CRUD actions on a Route, and trigger them from Components.
 -   Add behavior to Route actions to perform CRUD on the Route's model.
--   Create an Ember Service, and inject it into a Component.
 
 ## Setup
 
 1.  Fork and clone this repo.
 1.  Run `npm install` and `bower install`.
-
 1.  Clone [listr-api](https://github.com/ga-wdi-boston/listr-api) into a
-    separate directory on your machine and follow the instructions for the API.
-1.  Run `bundle exec rake db:nuke_pave` to setup or reset the database.
+    subdirectory of ~/wdi/tmp and follow the instructions to setup the API.
+1.  Start the api with `bin/rails server`
+1.  Start the client with `ember server`
 
 ## ember-data and CRUD
 
@@ -45,14 +44,94 @@ In the past few days, you've seen a whole lot of Ember's 'view' layer - the
 system governing how Ember responds to user behavior and controls what HTML gets
 rendered in the browser.
 
-While this is all very nice, it's meaningless without a back-end. That's where
+While this is all very nice, it's meaningless without an API. That's where
 Ember's 'data' layer comes in, as implemented by an add-on library to Ember
 called `ember-data`.
 
-`ember-data` provides several Ember Classes for handling the interchange of
-information between the front-end and the back-end, most notably Models (which
+`ember-data` provides several Ember Classes for handling the exchange of
+information between the client and the API, most notably Models (which
 represent back-end resources as Ember Objects) and Adapters (which manage the
-actual interactions with the underlying APIs).
+actual interactions with the underlying API(s)).
+
+## Refactor ListR
+
+We'll start with the solution from `ember-components`.
+
+### Move ListR to the lists route
+
+1.  Generate a `lists` route
+1.  Move ListR specifics from `index` route to `lists` route
+1.  Link to lists from index
+
+```sh
+ember generate route lists
+```
+
+### Get and display list data from the listr-api
+
+The README for the API shows us the data we can expect at [GET
+/lists](https://github.com/ga-wdi-boston/listr-api#get-lists). Note that the
+items returned are just ids.
+
+1.  Generate a `list` model (for now, we'll leave items off)
+1.  Generate a `listr-list/card` component as the top-level interface to lists
+1.  Copy the list title display to `listr-list/card` (without any action)
+1.  Refactor the `lists` route template to use `listr-list/card`
+1.  Refactor the `lists` route `model` method to use the ActiveModelAdapter
+
+```sh
+ember generate model list title:string hidden:boolean
+```
+
+```js
+export default Ember.Route.extend({
+  model () {
+    return this.get('store').findAll('list');
+  }
+});
+```
+
+### Get and display item data
+
+1.  Generate an `item` model
+1.  Add a hasMany to the `list` model
+1.  Generate a route for a single list
+1.  Update `app/router.js` for the single list route
+1.  Add the `model` method to the `list` route
+1.  Invoke the `listr-list` component from the `list` route template
+1.  Link to the `list` route from the `listr-list/card` template
+
+```sh
+ember generate model item content:string done:boolean list:belongs-to:list
+ember generate route list
+```
+
+```diff
+ export default DS.Model.extend({
+   title: DS.attr('string'),
+   hidden: DS.attr('boolean'),
++  items: DS.hasMany('item'),
+ });
+```
+
+```diff
+ Router.map(function () {
+   this.route('lists');
+-  this.route('list');
++  this.route('list', { path: '/lists/:list_id' });
+ });
+```
+
+```diff
+ export default Ember.Route.extend({
++  model (params) {
++    return this.get('store').findRecord('list', params.list_id);
++  },
+ });
+```
+
+Now that we've refactored ListR to use data from the API, we'll move on to
+persisting changes.
 
 ### Code-Along: Making a List Model
 
@@ -84,14 +163,6 @@ exposes data to the templates. Each Route has a `store` property which refers to
 whatever data store your application is using (in this case, ember-data), so to
 make the List model available in the `lists` route, we reference the store
 and query it for all instances.
-
-```js
-export default Ember.Route.extend({
-  model: function(){
-    return this.get('store').findAll('list');
-  }
-});
-```
 
 ### Lab: Use the List Model in A Singular Route
 
@@ -132,9 +203,9 @@ export default Ember.Route.extend({
     ...
   },
   actions: {
-    create: function(){ ... },
-    update: function(){ ... },
-    destroy: function(){ ... }
+    create () { ... },
+    update () { ... },
+    destroy () { ... },
     // ... etc
   }
 });
@@ -150,10 +221,10 @@ pattern, which essentially means two things:
 
 1.  All Components look to their parent element as a source of data to bind to;
     as a result, data changes propagate 'downwards' from parent to child.
-1.  Implicit in the first point is that all changes to date place in the parent.
-    In order to effect changes to the data in a parent element, Components
-    trigger their parents' actions; in this fashion, action invocations
-    propagate 'upwards' from child to parent.
+1.  Implicit in the first point is that all changes to data take place in the
+    parent.  In order to effect changes to the data in a parent element,
+    Components trigger their parents' actions; in this fashion, action
+    invocations propagate 'upwards' from child to parent.
 
 ## Code-Along: Handling UI State
 
@@ -161,6 +232,11 @@ pattern, which essentially means two things:
 
 -   [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)
 -   [Ember API : DS.store](http://emberjs.com/api/data/classes/DS.Store.html)
+-   [Ember Data](https://cloud.githubusercontent.com/assets/10064043/18616616/13abe5fe-7d8d-11e6-9fe6-7cca802d4ddc.png)
+-   [ember-data to ActiveRecord](https://cloud.githubusercontent.com/assets/10064043/18616633/86fe1680-7d8d-11e6-9b64-ad472163a7c5.png)
+-   [Ember core concepts](https://guides.emberjs.com/v2.8.0/images/ember-core-concepts/ember-core-concepts.png)
+-   [Data Flow](https://cloud.githubusercontent.com/assets/10064043/18616665/f6062c84-7d8d-11e6-8d01-60960346cf95.png)
+-   [data down actions up](https://cloud.githubusercontent.com/assets/10064043/18616671/0e74c262-7d8e-11e6-8ba9-6f1e5840a741.png)
 
 ## [License](LICENSE)
 
