@@ -17,6 +17,6 @@
   list-style: none;
 }
 
-.list-item-completed {
+.list-item-completed > :first-child {
   text-decoration: line-through;
 }
