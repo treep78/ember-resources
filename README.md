@@ -217,7 +217,7 @@ pattern, which essentially means two things:
     1.  Add the toggleItemDone action to send the action up
 1.  In the `list` route
     1.  Add `toggleItemDone='toggleItemDone'` to invoking `listr-list`
-    1.  Add the toggleItemDone action the route
+    1.  Add the toggleItemDone action to the route
 
 ```diff
  export default Ember.Component.extend({
@@ -261,6 +261,17 @@ pattern, which essentially means two things:
  });
 ```
 
+### Delete items on the API
+
+1.  In the `listr-list/item` component
+    1.  Add a button with text "Delete" and `{{action 'delete'}}`
+    1.  Add a `delete` action to send that action up
+1.  In the `listr-list` component
+    1.  Add `delete='deleteItem'` to invoking `listr-list/item`
+    1.  Add the `deleteItem` action to send the action up
+1.  In the `list` route
+    1.  Add `deleteItem='deleteItem'` to invoking `listr-list`
+    1.  Add the deleteItem action to the route
 
 ## Additional Resources
 
