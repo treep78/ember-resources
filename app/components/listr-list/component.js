@@ -13,5 +13,9 @@ export default Ember.Component.extend({
       this.sendAction('toggleItemDone', item);
     },
 
+    deleteItem (item) {
+      this.sendAction('deleteItem', item);
+    },
+
   },
 });
