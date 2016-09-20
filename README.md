@@ -293,6 +293,83 @@ some extra work.
 We'll extend the default application adapter, included in `ember-template` to
 handle this case.
 
+## Adding CRUD to lists
+
+### Editing a ListR title
+
+1.  Generate `list/edit` route (don't nest - at least for now)
+1.  Generate `listr-list/edit` component
+1.  In the `listr-list/card` component
+    1.  Add an 'Edit' button with `{{action 'edit'}}`
+    1.  Add an edit action handler to send the action up
+1.  In the `lists` route
+    1.  Add `edit='editList'` to invoking `listr-list/card`
+    1.  Add an `editList` action handler to `transitionTo` `list/edit`
+1.  In the `listr-list/edit` component
+    1.  Add a form with `{{action 'save' on='submit'}}`
+    1.  Add {{input value=list.title}} to the form
+    1.  Add a `save` action handler to send the `save` action up
+1.  In the `list/edit` route
+    1.  Add `save='saveList'` to the invocation of `listr-list/edit`
+    1.  Add a `saveList` action handler
+
+```diff
+ {{#link-to 'list' list }}
+   <h3 class="list-header">{{list.title}}</h3>
+ {{/link-to}}
++<button class="btn btn-primary" {{action 'edit'}}>
++  Edit
++</button>
+```
+
+```diff
+ export default Ember.Component.extend({
++  actions: {
++    edit () {
++      this.sendAction('edit', this.get('list'));
++    },
++  },
+ });
+```
+
+```diff
+ {{#each model as |list|}}
+-  {{listr-list/card list=list}}
++  {{listr-list/card list=list edit='editList'}}
+ {{/each}}
+```
+
+```diff
+ model () {
+   return this.get('store').findAll('list');
+ },
++
++  actions: {
++    editList (list) {
++      this.transitionTo('list/edit', list);
++    },
++  },
+ });
+```
+
+```js
+import Ember from 'ember';
+
+export default Ember.Route.extend({
+  model (params) {
+    console.error(params);
+    return this.get('store').findRecord('list', params.list_id);
+  },
+
+  actions: {
+    saveList(list) {
+      list.save()
+        .then(()=>this.transitionTo('lists'));
+    },
+  },
+});
+```
+
 ## Additional Resources
 
 -   [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)

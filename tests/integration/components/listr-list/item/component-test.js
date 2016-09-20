@@ -9,16 +9,18 @@ test('it renders', function (assert) {
   // Set any properties with this.set('myProperty', 'value');
   // Handle any actions with this.on('myAction', function(val) { ... });
 
-  this.render(hbs`{{listr-list/item}}`);
+  this.set('item', { content: 'bob' });
 
-  assert.equal(this.$().text().trim(), '');
+  this.render(hbs`{{listr-list/item item=item}}`);
 
-  // Template block usage:
-  this.render(hbs`
-    {{#listr-list/item}}
-      template block text
-    {{/listr-list/item}}
-  `);
+  assert.equal(this.$('span.list-item').text().trim(), 'bob');
 
-  assert.equal(this.$().text().trim(), 'template block text');
+  // // Template block usage:
+  // this.render(hbs`
+  //   {{#listr-list/item}}
+  //     template block text
+  //   {{/listr-list/item}}
+  // `);
+  //
+  // assert.equal(this.$().text().trim(), 'template block text');
 });
