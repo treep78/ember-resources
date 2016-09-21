@@ -19,5 +19,10 @@ export default Ember.Route.extend({
       let item = this.get('store').createRecord('item', data);
       item.save();
     },
+
+    saveList(list) {
+      list.save()
+        .then(()=>this.transitionTo('lists'));
+    },
   },
 });
