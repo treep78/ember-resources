@@ -512,6 +512,72 @@ export default Ember.Route.extend({
 });
 ```
 
+### Delete a ListR list
+
+1.  In the `listr-list/card` component
+    1.  Add a delete action
+    1.  Add a delete button with `{{action 'delete'}}``
+
+```diff
+     edit () {
+
+       this.sendAction('edit', this.get('list'));
+     },
++
++    delete () {
++      this.sendAction('delete', this.get('list'));
++    },
+   },
+ });
+```
+
+```hbs
+<button class="btn btn-danger" {{action 'delete'}}>
+  Delete
+</button>
+```
+
+```diff
+ export default Ember.Route.extend({
++  actions: {
++    deleteList(list) {
++      list.destroyRecord()
++        .then(() => this.transitionTo('lists'));
++    },
++  },
+ });
+```
+
+Can we delete a non-empty lists?
+
+#### Refactor delete availability
+
+Now we'll add code to ensure the list is empty before we delete it
+
+```diff
+ <button class="btn btn-primary" {{action 'edit'}}>
+   Edit
+ </button>
++{{#if isEmpty}}
+   <button class="btn btn-danger" {{action 'delete'}}>
+     Delete
+   </button>
++{{/if}}
+```
+
+```diff
+import Ember from 'ember';
+
+export default Ember.Component.extend({
++  isEmpty: Ember.computed('list', function () {
++    let items = this.get('list').hasMany('items');
++    return items.ids().length === 0;
++  }),
+   actions: {
+     edit () {
+       this.sendAction('edit', this.get('list'));
+```
+
 ## Additional Resources
 
 -   [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)

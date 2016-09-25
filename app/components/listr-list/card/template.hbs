@@ -4,3 +4,8 @@
 <button class="btn btn-primary" {{action 'edit'}}>
   Edit
 </button>
+{{#if isEmpty}}
+  <button class="btn btn-danger" {{action 'delete'}}>
+  Delete
+  </button>
+{{/if}}
