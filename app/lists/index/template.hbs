@@ -1,0 +1,7 @@
+{{#each model as |list|}}
+  {{listr-list/card list=list edit='editList' delete='deleteList'}}
+{{/each}}
+<br>
+{{#link-to 'lists.new' class="btn btn-xs btn-success" }}
+  New List
+{{/link-to}}

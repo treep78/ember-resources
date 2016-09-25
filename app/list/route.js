@@ -24,5 +24,10 @@ export default Ember.Route.extend({
       list.save()
         .then(()=>this.transitionTo('lists'));
     },
+
+    cancelSaveList(list) {
+      list.rollbackAttributes();
+      this.transitionTo('lists');
+    },
   },
 });

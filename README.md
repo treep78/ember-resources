@@ -464,6 +464,54 @@ export default Ember.Route.extend({
  export default Router;
 ```
 
+### Creating a new list
+
+1.  Generate a `lists/index` route
+1.  Generate a `lists/new` route
+1.  Exchange the code `lists/component.js` and `lists/index/component.js`
+1.  Exchange the code `lists/template.hbs` and `lists/index/template.hbs`
+1.  Add a `link-to` for `lists.new` to `lists/index/template.hbs`
+1.  In the `lists.new` route
+    1.  Invoke the `listr-list/edit` component from `template.hbs`
+    1.  Add the appropriate `model` method and `actions` to `component.js`
+
+```diff
+ {{#each model as |list|}}
+   {{listr-list/card list=list edit='editList' delete='deleteList'}}
+ {{/each}}
++<br>
++{{#link-to 'lists.new' class="btn btn-xs btn-success" }}
++  New List
++{{/link-to}}
+```
+
+```hbs
+{{listr-list/edit list=model save='createList' cancel='cancelCreateList'}}
+```
+
+```js
+import Ember from 'ember';
+
+export default Ember.Route.extend({
+  model () {
+    return this.get('store').createRecord('list', {});
+  },
+
+  actions: {
+    createList(list) {
+      list.save()
+        .then(()=>this.transitionTo('lists'));
+    },
+
+    cancelCreateList(list) {
+      list.rollbackAttributes();
+      this.transitionTo('lists');
+    },
+
+  },
+});
+```
+
 ## Additional Resources
 
 -   [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)
