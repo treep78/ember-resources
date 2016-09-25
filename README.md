@@ -370,6 +370,100 @@ export default Ember.Route.extend({
 });
 ```
 
+### Refactor `list` routes into nested routes
+
+#### `list/edit/route.js`
+```diff
+ import Ember from 'ember';
+
+ export default Ember.Route.extend({
+-  model (params) {
+-    console.error(params);
+-    return this.get('store').findRecord('list', params.list_id);
+-  },
+-
+-  actions: {
+-    saveList(list) {
+-      list.save()
+-        .then(()=>this.transitionTo('lists'));
+-    },
+-  },
+ });
+```
+
+#### `list/index/route.js`
+
+```js
+import Ember from 'ember';
+
+export default Ember.Route.extend({
+});
+```
+
+#### `list/index/template.hbs`
+```hbs
+{{listr-list list=model
+             toggleItemDone='toggleItemDone'
+             deleteItem='deleteItem'
+             createItem='createItem'
+           }}
+```
+
+#### `list/route.js`
+
+```diff
+       let item = this.get('store').createRecord('item', data);
+       item.save();
+     },
++
++    saveList(list) {
++      list.save()
++        .then(()=>this.transitionTo('lists'));
++    },
+   },
+ });
+```
+
+#### `list/template.hbs`
+
+```diff
+-{{listr-list list=model
+-             toggleItemDone='toggleItemDone'
+-             deleteItem='deleteItem'
+-             createItem='createItem'
+-           }}
++{{outlet}}
+```
+
+### `lists/route.js`
+
+```diff
+   actions: {
+     editList (list) {
+-      this.transitionTo('list/edit', list);
++      this.transitionTo('list.edit', list);
+     },
+   },
+ });
+```
+
+### `router.js`
+
+```diff
+
+ Router.map(function () {
+   this.route('lists');
+-  this.route('list', { path: 'lists/:list_id' });
++  this.route('list', { path: 'lists/:list_id' }, function () {
++    this.route('edit');
++  });
+
+-  this.route('list/edit', { path: 'lists/:list_id/edit' });
+ });
+
+ export default Router;
+```
+
 ## Additional Resources
 
 -   [Ember API : Ember.ActionHandler](http://emberjs.com/api/classes/Ember.ActionHandler.html)
