@@ -558,7 +558,7 @@ Now we'll add code to ensure the list is empty before we delete it
  <button class="btn btn-primary" {{action 'edit'}}>
    Edit
  </button>
-+{{#if isEmpty}}
++{{#if list.isEmpty}}
    <button class="btn btn-danger" {{action 'delete'}}>
      Delete
    </button>
@@ -566,16 +566,114 @@ Now we'll add code to ensure the list is empty before we delete it
 ```
 
 ```diff
-import Ember from 'ember';
+ import DS from 'ember-data';
++import Ember from 'ember';
 
-export default Ember.Component.extend({
-+  isEmpty: Ember.computed('list', function () {
-+    let items = this.get('list').hasMany('items');
+ export default DS.Model.extend({
+   title: DS.attr('string'),
+   hidden: DS.attr('boolean'),
+   items: DS.hasMany('item'),
++  isEmpty: Ember.computed('items', function () {
++    let items = this.hasMany('items');
 +    return items.ids().length === 0;
 +  }),
+ });
+```
+
+### Add pagination
+
+app/list/route.js
+
+```diff
+     cancelSaveList(list) {
+       list.rollbackAttributes();
+-      this.transitionTo('lists');
++      history.back();
+     },
+   },
+ });
+```
+
+app/lists/index/controller.js
+
+```js
+import Ember from 'ember';
+
+export default Ember.Controller.extend({
+  queryParams: ['page', 'size'],
+  size: 2,
+  page: 1,
+  prev: Ember.computed('page', function () {
+    let page = this.get('page');
+    return page > 1 && page - 1;
+  }),
+  next: Ember.computed('page', function () {
+    return this.get('model.length') >= this.get('size') &&
+      this.get('page') + 1;
+  }),
+});
+```
+
+app/lists/index/route.js
+
+```diff
+ import Ember from 'ember';
+
+ export default Ember.Route.extend({
++  queryParams: {
++    page: {
++      refreshModel: true,
++    },
++  },
++
++  model (params) {
++    return this.get('store').query('list', params);
++  },
++
    actions: {
-     edit () {
-       this.sendAction('edit', this.get('list'));
++    editList (list) {
++      this.transitionTo('list.edit', list);
++    },
++
+     deleteList(list) {
+       list.destroyRecord()
+         .then(() => this.transitionTo('lists'));
+```
+
+app/lists/index/template.hbs
+
+```diff
++{{#if prev}}
++  {{#link-to 'lists' (query-params page=prev size=size)}}
++    Previous
++  {{/link-to}}
++{{/if}}
++{{#if next}}
++  {{#link-to 'lists' (query-params page=next size=size)}}
++    Next
++  {{/link-to}}
++{{/if}}
+ {{#each model as |list|}}
+   {{listr-list/card list=list edit='editList' delete='deleteList'}}
+ {{/each}}
+```
+
+app/lists/route.js
+
+```diff
+ import Ember from 'ember';
+
+ export default Ember.Route.extend({
+-  model () {
+-    return this.get('store').findAll('list');
+-  },
+-
+-  actions: {
+-    editList (list) {
+-      this.transitionTo('list.edit', list);
+-    },
+-  },
+ });
 ```
 
 ## Additional Resources

@@ -1,3 +1,13 @@
+{{#if prev}}
+  {{#link-to 'lists' (query-params page=prev size=size)}}
+    Previous
+  {{/link-to}}
+{{/if}}
+{{#if next}}
+  {{#link-to 'lists' (query-params page=next size=size)}}
+    Next
+  {{/link-to}}
+{{/if}}
 {{#each model as |list|}}
   {{listr-list/card list=list edit='editList' delete='deleteList'}}
 {{/each}}

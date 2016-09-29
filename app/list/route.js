@@ -27,7 +27,7 @@ export default Ember.Route.extend({
 
     cancelSaveList(list) {
       list.rollbackAttributes();
-      this.transitionTo('lists');
+      history.back();
     },
   },
 });
