@@ -11,7 +11,7 @@ test('it renders', function (assert) {
 
   this.render(hbs`{{listr-list/edit}}`);
 
-  assert.equal(this.$().text().trim(), '');
+  assert.equal(this.$().text().trim(), 'Save\n  Cancel');
 
   // // Template block usage:
   // this.render(hbs`
