@@ -1,14 +1,12 @@
-{{#if prev}}
-  {{#link-to 'lists' (query-params page=prev size=size)}}
-    Previous
-  {{/link-to}}
-{{/if}}
+{{#link-to 'lists' (query-params page=prev size=size) disabled=(if prev false true) }}
+  Previous
+{{/link-to}}
 {{#if next}}
   {{#link-to 'lists' (query-params page=next size=size)}}
     Next
   {{/link-to}}
 {{/if}}
-{{#each model as |list|}}
+{{#each modelSlice as |list|}}
   {{listr-list/card list=list edit='editList' delete='deleteList'}}
 {{/each}}
 <br>

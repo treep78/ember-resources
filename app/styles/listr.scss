@@ -1,3 +1,14 @@
+.disabled {
+  opacity: 0.4;
+  cursor: default;
+  text-decoration: none;
+}
+
+.disabled:hover {
+  cursor: default;
+  text-decoration: none;
+}
+
 .listr {
   font-size: 18px;
   line-height: 1.6;
