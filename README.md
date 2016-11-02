@@ -24,7 +24,7 @@ By now, you have already learned how to:
 By the end of this session, you should be able to:
 
 -   Generate a Model to represent a resource on the front-end.
--   Create an Adapter to connect your Model(s) to an API.
+-   Extend an Adapter to connect your Model(s) to an API.
 -   Make Models accessible in templates by loading them through Routes.
 -   Create CRUD actions on a Route, and trigger them from Components.
 -   Add behavior to Route actions to perform CRUD on the Route's model.
@@ -61,7 +61,7 @@ We'll start with the solution from `ember-components`.
 
 1.  Generate a `lists` route
 1.  Move ListR specifics from `index` route to `lists` route
-1.  Link to lists from index
+1.  Link to `lists` route from `index` route
 
 ```sh
 ember generate route lists
@@ -210,11 +210,11 @@ pattern, which essentially means two things:
 ### Persist item changes to the API
 
 1.  In the `listr-list/item` component
-    1.  Make `listItemCompleted` a computed property alias in the item component
+    1.  Make listItemCompleted a computed property alias of the item component
     1.  Change toggleDone to send that action up
 1.  In the `listr-list` component
     1.  Add `toggleDone='toggleItemDone'` to invoking `listr-list/item`
-    1.  Add the toggleItemDone action to send the action up
+    1.  Add the toggleItemDone action handler to send the action up
 1.  In the `list` route
     1.  Add `toggleItemDone='toggleItemDone'` to invoking `listr-list`
     1.  Add the toggleItemDone action to the route
@@ -261,7 +261,7 @@ pattern, which essentially means two things:
  });
 ```
 
-### Delete items on the API
+### Lab: Delete items on the API
 
 1.  In the `listr-list/item` component
     1.  Add a button with text "Delete" and `{{action 'delete'}}`
