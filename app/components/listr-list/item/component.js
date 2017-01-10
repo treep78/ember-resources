@@ -11,7 +11,7 @@ export default Ember.Component.extend({
       //return this.toggleProperty('listItemCompleted');
     },
     delete() {
-      this.sendAction('delete', this.get('item'))
+      this.sendAction('delete', this.get('item'));
     }
   },
 });

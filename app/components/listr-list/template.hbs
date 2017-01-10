@@ -6,3 +6,9 @@
                       delete='deleteItem'}}
   {{/each}}
 </ol>
+<form {{action 'createItem' on='submit'}}>
+  {{input placeholder='NewItem'
+          value=newItem.content}}
+
+  <button class='btn btn-xs' type='submit'>CREATE ITEM</button>
+</form>
