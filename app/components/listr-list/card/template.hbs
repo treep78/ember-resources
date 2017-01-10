@@ -1,4 +1,5 @@
-<h4>{{list.title}}</h4>
-{{#each list.item as |list|}}
-  <li>{{list.item}}</li>
-{{/each}}
+{{#link-to 'list' list}}
+  <h4>
+    {{list.title}}
+  </h4>
+{{/link-to}}
